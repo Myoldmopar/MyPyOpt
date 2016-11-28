@@ -19,6 +19,8 @@ class HeuristicSearch(object):
 
         # set this flag for later inspection
         self.status = IOErrorReturnValues.Success
+        self.converged = False
+        self.converged_values = None
 
         # validate DV array, it must have upper bound <= 9 because of the sed operation and format statement
         if len(dvs) > 9:
@@ -34,10 +36,10 @@ class HeuristicSearch(object):
 
         # output optimization information so we don't have to look in the source
         with open('OptimizationProjectInformation.txt', 'w') as f:
-            f.writeline("Variable Name, Min Value, Max Value, Initial Value, Initial Step Size, Convergence Criterion")
+            f.write("Variable Name, Min Value, Max Value, Initial Value, Initial Step Size, Convergence Criterion\n")
             for dv in dvs:
-                f.writeline(','.join(str(x) for x in [dv.var_name, dv.value_minimum, dv.value_maximum, dv.value_initial,
-                                  dv.step_size_initial, dv.convergence_criteria]))
+                f.write(','.join(str(x) for x in [dv.var_name, dv.value_minimum, dv.value_maximum, dv.value_initial,
+                                  dv.step_size_initial, dv.convergence_criteria]) + '\n')
 
         timestamp = time.strftime('%Y-%m-%d-%H:%M:%S')
         full_output_file_name = 'FullOutput_' + timestamp + '.log'
@@ -128,6 +130,8 @@ class HeuristicSearch(object):
 
             if converged:
                 self.io.write_line(True, self.full_output_file, self.opt_output_file, 'converged')
+                self.converged = True
+                self.converged_values = x_new
                 break
 
     # raw data sum of square error

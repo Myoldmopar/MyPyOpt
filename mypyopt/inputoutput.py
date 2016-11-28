@@ -19,8 +19,10 @@ class InputOutputManager(object):
     def write_line(console, full_output, opt_output, string):
         if console:
             print(string)
+        if not string.endswith('\n'):
+            string += '\n'
         if full_output:
-            full_output.writeline(string)
+            full_output.write(string)
         if opt_output:
-            opt_output.writeline(string)
+            opt_output.write(string)
         return
