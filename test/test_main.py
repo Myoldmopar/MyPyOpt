@@ -29,9 +29,9 @@ class TestQuadratic(unittest.TestCase):
         io = InputOutputManager()
 
         # Actual "simulation"
-        def sim_quadratic(coefficients):
+        def sim_quadratic(parameter_hash):
             x_values = [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
-            return [coefficients[0] + coefficients[1] * x + coefficients[2] * (x ** 2) for x in x_values]
+            return [parameter_hash['a'] + parameter_hash['b'] * x + parameter_hash['c'] * (x ** 2) for x in x_values]
 
         # Squared Error expression
         def ssqe_quadratic(sim_values):

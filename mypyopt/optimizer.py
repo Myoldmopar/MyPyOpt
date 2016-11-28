@@ -58,7 +58,7 @@ class HeuristicSearch(object):
         self.io.write_line(True, self.full_output_file, self.opt_output_file, '*******Optimization Beginning*******')
 
         # evaluate starting point
-        base_vals = [x.x_base for x in self.dvs]
+        base_vals = {dv.var_name: dv.x_base for dv in self.dvs}
         obj_base = self.f_of_x(base_vals)
         j_base = obj_base.value
         if obj_base.return_state == ReturnStateEnum.Return_state_useraborted:
@@ -85,7 +85,7 @@ class HeuristicSearch(object):
 
                 # setup a new point
                 dv.x_new = dv.x_base + dv.delta_x
-                new_vals = [x.x_new for x in self.dvs]
+                new_vals = {dv.var_name: dv.x_new for dv in self.dvs}
 
                 if dv.x_new > dv.value_maximum or dv.x_new < dv.value_minimum:
                     self.io.write_line(True, self.full_output_file, self.opt_output_file,
@@ -142,13 +142,13 @@ class HeuristicSearch(object):
                 break
 
     # raw data sum of square error
-    def f_of_x(self, par):
+    def f_of_x(self, parameter_hash):
 
         # return value
         obj = ObjectiveEvaluation()
 
         # run the simulation function
-        current_f = self.sim_func(par)
+        current_f = self.sim_func(parameter_hash)
 
         # for now assume everything went OK?
         if not current_f:
