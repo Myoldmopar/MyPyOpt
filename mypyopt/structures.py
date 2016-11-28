@@ -6,6 +6,9 @@ class DecisionVariable(object):
         self.step_size_initial = initial_step_size
         self.convergence_criteria = convergence_criterion
         self.var_name = variable_name
+        self.x_base = initial_value
+        self.x_new = initial_value
+        self.delta_x = initial_step_size
 
 
 class SimulationStructure(object):

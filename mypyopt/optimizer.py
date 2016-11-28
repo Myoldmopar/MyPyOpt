@@ -1,6 +1,5 @@
 import os
 import time
-import subprocess
 
 from structures import ReturnStateEnum, ObjectiveEvaluation
 from inputoutput import IOErrorReturnValues
@@ -56,15 +55,11 @@ class HeuristicSearch(object):
 
     def perform_iteration_loop(self):
 
-        # initialize arrays according to incoming DV structure
-        x_base = [x.value_initial for x in self.dvs]
-        x_new = [x.value_initial for x in self.dvs]
-        delta_x = [x.step_size_initial for x in self.dvs]
-
         self.io.write_line(True, self.full_output_file, self.opt_output_file, '*******Optimization Beginning*******')
 
         # evaluate starting point
-        obj_base = self.f_of_x(x_base)
+        base_vals = [x.x_base for x in self.dvs]
+        obj_base = self.f_of_x(base_vals)
         j_base = obj_base.value
         if obj_base.return_state == ReturnStateEnum.Return_state_useraborted:
             self.io.write_line(True, self.full_output_file, self.opt_output_file,
@@ -86,21 +81,33 @@ class HeuristicSearch(object):
                 return IOErrorReturnValues.Err_FoundStopFile
 
             # begin DV loop
-            ctr = -1
             for dv in self.dvs:
-                ctr += 1
 
-                # evaluate a new point
-                x_new[ctr] = x_base[ctr] + delta_x[ctr]
-                obj_new = self.f_of_x(x_new)
+                # setup a new point
+                dv.x_new = dv.x_base + dv.delta_x
+                new_vals = [x.x_new for x in self.dvs]
+
+                if dv.x_new > dv.value_maximum or dv.x_new < dv.value_minimum:
+                    self.io.write_line(True, self.full_output_file, self.opt_output_file,
+                                       'infeasible DV, name=' + dv.var_name)
+                    return ReturnStateEnum.Return_state_infeasibleDV
+
+                # then evaluate the new point
+                obj_new = self.f_of_x(new_vals)
                 j_new = obj_new.value
 
-                self.io.write_line(True, self.full_output_file, self.opt_output_file, 'iter=' + str(iteration))
-                self.io.write_line(True, self.full_output_file, self.opt_output_file, 'var=' + str(dv))
-                self.io.write_line(True, self.full_output_file, self.opt_output_file, 'x_base=' + str(x_base))
-                self.io.write_line(True, self.full_output_file, self.opt_output_file, 'j_base=' + str(j_base))
-                self.io.write_line(True, self.full_output_file, self.opt_output_file, 'x_new=' + str(x_new))
-                self.io.write_line(True, self.full_output_file, self.opt_output_file, 'j_new=' + str(j_new))
+                self.io.write_line(True, self.full_output_file, self.opt_output_file,
+                                   'iter=' + str(iteration))
+                self.io.write_line(True, self.full_output_file, self.opt_output_file,
+                                   'var=' + str(dv))
+                self.io.write_line(True, self.full_output_file, self.opt_output_file,
+                                   'x_base=' + str([x.x_base for x in self.dvs]))
+                self.io.write_line(True, self.full_output_file, self.opt_output_file,
+                                   'j_base=' + str(j_base))
+                self.io.write_line(True, self.full_output_file, self.opt_output_file,
+                                   'x_new=' + str([x.x_new for x in self.dvs]))
+                self.io.write_line(True, self.full_output_file, self.opt_output_file,
+                                   'j_new=' + str(j_new))
 
                 if obj_new.return_state == ReturnStateEnum.Return_state_unsuccessfulOther:
                     self.io.write_line(True, self.full_output_file, self.opt_output_file,
@@ -109,29 +116,29 @@ class HeuristicSearch(object):
                                        'Error message: ' + str(obj_new.message))
                     return IOErrorReturnValues.Err_UnexpectedError
                 elif (not obj_new.return_state == ReturnStateEnum.Return_state_successful) or (j_new > j_base):
-                    delta_x[ctr] = -self.sim.coeff_contract * delta_x[ctr]
-                    x_new[ctr] = x_base[ctr]
+                    dv.delta_x = -self.sim.coeff_contract * dv.delta_x
+                    dv.x_new = dv.x_base
                     self.io.write_line(True, self.full_output_file, self.opt_output_file,
                                        '## Unsuccessful objective evaluation, or worse result, going back ##')
                 else:
                     j_base = j_new
-                    x_base[ctr] = x_new[ctr]
-                    delta_x[ctr] = self.sim.coeff_expand * delta_x[ctr]
+                    dv.x_base = dv.x_new
+                    dv.delta_x = self.sim.coeff_expand * dv.delta_x
                     self.io.write_line(True, self.full_output_file, self.opt_output_file,
                                        '## Improved result, accepting and continuing forward ##')
 
+                # check if we went out of range
+
             converged = True
-            ctr = -1
             for dv in self.dvs:
-                ctr += 1
-                if abs(delta_x[ctr]) > dv.convergence_criteria:
+                if abs(dv.delta_x) > dv.convergence_criteria:
                     converged = False
                     break
 
             if converged:
                 self.io.write_line(True, self.full_output_file, self.opt_output_file, 'converged')
                 self.converged = True
-                self.converged_values = x_new
+                self.converged_values = [x.x_new for x in self.dvs]
                 break
 
     # raw data sum of square error
@@ -140,16 +147,7 @@ class HeuristicSearch(object):
         # return value
         obj = ObjectiveEvaluation()
 
-        # check that each variable is within the range
-        ctr = -1
-        for dv in self.dvs:
-            ctr += 1
-            if par[ctr] > dv.value_maximum or par[ctr] < dv.value_minimum:
-                obj.return_state = ReturnStateEnum.Return_state_infeasibleDV
-                obj.message = 'infeasible DV, name=' + dv.var_name
-                return
-
-        # run the simulation engine on the file
+        # run the simulation function
         current_f = self.sim_func(par)
 
         # for now assume everything went OK?
