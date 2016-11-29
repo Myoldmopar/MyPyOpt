@@ -2,7 +2,7 @@ import os
 import time
 import json
 
-from Enums import ReturnStateEnum
+from ReturnStateEnum import ReturnStateEnum
 from ObjectiveEvaluation import ObjectiveEvaluation
 from SearchReturnType import SearchReturnType
 from Exceptions import MyPyOptException
