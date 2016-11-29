@@ -1,46 +1,34 @@
-from mypyopt.DecisionVariable import DecisionVariable
-from mypyopt.SimulationStructure import SimulationStructure
-from mypyopt.InputOutput import InputOutputManager
-from mypyopt.Optimizer import HeuristicSearch
+import sys
+import os
+import shutil
+import unittest
+from test import test_main
 
 
-# Initialize simulation structure
-# SimulationStructure(expansion, contraction, max_iterations)
-sim = SimulationStructure(1.2, 0.85, 2000, 'PolynomialTest', 'projects')
-
-# Initialize list of decision variables
-# DecisionVariable(min, max, initial_value, initial_step_size, convergence_criterion, variable_name)
-dvs = list()
-dvs.append(DecisionVariable(-5, 5, 0.5, 0.1, 0.0000000001, 'a'))  # opt value = 1
-dvs.append(DecisionVariable(-5, 5, 0.5, 0.1, 0.0000000001, 'b'))  # opt value = 2
-dvs.append(DecisionVariable(-5, 5, 0.5, 0.1, 0.0000000001, 'c'))  # opt value = 3
-
-# Initialize the IO manager
-io = InputOutputManager()
+valid_args = ['test', 'clean_projects', 'usage']
 
 
-# Actual "simulation"
-def sim_quadratic(parameter_hash):
-    x_values = [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
-    return [parameter_hash['a'] + parameter_hash['b']*x + parameter_hash['c']*(x**2) for x in x_values]
+def usage():
+    print("Usage: call with one of the following arguments:")
+    for arg in valid_args:
+        print("  " + sys.argv[0] + " " + arg)
 
-
-# Squared Error expression
-def ssqe_quadratic(sim_values):
-    x_values = [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
-    actual_values = [1 + 2*x + 3*(x**2) for x in x_values]
-    sqe = [(a - b)**2 for a, b in zip(actual_values, sim_values)]
-    return sum(sqe)
-
-
-# exercise the callbacks
-def completed(return_value):
-    print("COMPLETED CALLBACK: DONE; reason=")
-
-
-def progress(completed_iteration_number):
-    print("PROGRESS CALLBACK: COMPLETED ITERATION #" + str(completed_iteration_number))
-
-# run the optimizer
-searcher = HeuristicSearch(sim, dvs, io, sim_quadratic, ssqe_quadratic, progress, completed)
-searcher.search()
+if len(sys.argv) != 2:
+    print("Error: Must call with 1 command line argument!")
+    usage()
+    sys.exit(1)
+elif sys.argv[1] == valid_args[0]:
+    suite = unittest.TestLoader().loadTestsFromTestCase(test_main.TestQuadratic)
+    unittest.TextTestRunner(verbosity=2).run(suite)
+    sys.exit(0)
+elif sys.argv[1] == valid_args[1]:
+    print("I'll delete this folder: " + os.path.join(os.path.dirname(os.path.realpath(__file__)), "projects"))
+    shutil.rmtree(os.path.join(os.path.dirname(os.path.realpath(__file__)), "projects"))
+    sys.exit(0)
+elif sys.argv[1] == valid_args[2]:
+    usage()
+    sys.exit(0)
+else:
+    print("Error: Invalid command line argument passed in!")
+    usage()
+    sys.exit(1)

@@ -2,6 +2,7 @@ import sys
 import os
 import unittest
 
+
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
 
 from mypyopt.SimulationStructure import SimulationStructure
@@ -11,35 +12,50 @@ from mypyopt.Optimizer import HeuristicSearch
 
 
 class TestQuadratic(unittest.TestCase):
-    def test_quadratic1(self):
+
+    def setUp(self):
         # Initialize simulation structure
         # SimulationStructure(expansion, contraction, max_iterations)
-        sim = SimulationStructure(1.2, 0.85, 2000, 'TestProject', 'projects')
+        self.sim = SimulationStructure(1.2, 0.85, 2000, 'TestProject', 'projects')
 
         # Initialize list of decision variables
         # DecisionVariable(min, max, initial_value, initial_step_size, convergence_criterion, variable_name)
-        dvs = list()
-        dvs.append(DecisionVariable(-5, 5, 0.5, 0.1, 0.000001, 'a'))  # opt value = 1
-        dvs.append(DecisionVariable(-5, 5, 0.5, 0.1, 0.000001, 'b'))  # opt value = 2
-        dvs.append(DecisionVariable(-5, 5, 0.5, 0.1, 0.000001, 'c'))  # opt value = 3
+        self.dvs = list()
+        self.dvs.append(DecisionVariable(-5, 5, 0.5, 0.1, 0.000001, 'a'))  # opt value = 1
+        self.dvs.append(DecisionVariable(-5, 5, 0.5, 0.1, 0.000001, 'b'))  # opt value = 2
+        self.dvs.append(DecisionVariable(-5, 5, 0.5, 0.1, 0.000001, 'c'))  # opt value = 3
 
         # Initialize the IO manager
-        io = InputOutputManager()
+        self.io = InputOutputManager()
 
-        # Actual "simulation"
-        def sim_quadratic(parameter_hash):
-            x_values = [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
-            return [parameter_hash['a'] + parameter_hash['b'] * x + parameter_hash['c'] * (x ** 2) for x in x_values]
+    # Actual "simulation"
+    @staticmethod
+    def sim_quadratic(parameter_hash):
+        x_values = [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+        return [parameter_hash['a'] + parameter_hash['b'] * x + parameter_hash['c'] * (x ** 2) for x in x_values]
 
-        # Squared Error expression
-        def ssqe_quadratic(sim_values):
-            x_values = [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
-            actual_values = [1 + 2 * x + 3 * (x ** 2) for x in x_values]
-            sqe = [(a - b) ** 2 for a, b in zip(actual_values, sim_values)]
-            return sum(sqe)
+    # Squared Error expression
+    @staticmethod
+    def ssqe_quadratic(sim_values):
+        x_values = [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+        actual_values = [1 + 2 * x + 3 * (x ** 2) for x in x_values]
+        sqe = [(a - b) ** 2 for a, b in zip(actual_values, sim_values)]
+        return sum(sqe)
+
+    # exercise the callbacks
+    @staticmethod
+    def completed(return_value):
+        print("COMPLETED CALLBACK: DONE; reason=" + str(return_value.reason))
+
+    @staticmethod
+    def progress(completed_iteration_number):
+        print("PROGRESS CALLBACK: COMPLETED ITERATION #" + str(completed_iteration_number))
+
+    def test_quadratic1(self):
 
         # run the optimizer
-        searcher = HeuristicSearch(sim, dvs, io, sim_quadratic, ssqe_quadratic)
+        searcher = HeuristicSearch(self.sim, self.dvs, self.io, self.sim_quadratic,
+                                   self.ssqe_quadratic, self.progress, self.completed)
         response = searcher.search()
 
         self.assertTrue(response.success)
