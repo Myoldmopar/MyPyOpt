@@ -4,7 +4,7 @@ from mypyopt.optimizer import HeuristicSearch
 
 # Initialize simulation structure
 # SimulationStructure(expansion, contraction, max_iterations)
-sim = SimulationStructure(1.2, 0.85, 2000)
+sim = SimulationStructure(1.2, 0.85, 2000, 'PolynomialTest', 'projects')
 
 # Initialize list of decision variables
 # DecisionVariable(min, max, initial_value, initial_step_size, convergence_criterion, variable_name)

@@ -16,7 +16,7 @@ class TestQuadratic(unittest.TestCase):
     def test_quadratic1(self):
         # Initialize simulation structure
         # SimulationStructure(expansion, contraction, max_iterations)
-        sim = SimulationStructure(1.2, 0.85, 2000)
+        sim = SimulationStructure(1.2, 0.85, 2000, 'TestProject', 'projects')
 
         # Initialize list of decision variables
         # DecisionVariable(min, max, initial_value, initial_step_size, convergence_criterion, variable_name)

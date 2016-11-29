@@ -12,10 +12,12 @@ class DecisionVariable(object):
 
 
 class SimulationStructure(object):
-    def __init__(self, expansion, contraction, max_iterations):
+    def __init__(self, expansion, contraction, max_iterations, project_name, output_dir):
         self.coeff_expand = expansion
         self.coeff_contract = contraction
         self.max_iterations = max_iterations
+        self.project_name = project_name
+        self.output_dir = output_dir
 
 
 class ReturnStateEnum(object):
