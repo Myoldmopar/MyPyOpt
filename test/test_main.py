@@ -9,14 +9,13 @@ from mypyopt.SimulationStructure import SimulationStructure
 from mypyopt.InputOutput import InputOutputManager
 from mypyopt.DecisionVariable import DecisionVariable
 from mypyopt.Optimizer import HeuristicSearch
+from mypyopt.Exceptions import MyPyOptException
+from mypyopt.ReturnStateEnum import ReturnStateEnum
 
 
 class TestQuadratic(unittest.TestCase):
 
     def setUp(self):
-        # Initialize simulation structure
-        # SimulationStructure(expansion, contraction, max_iterations)
-        self.sim = SimulationStructure(1.2, 0.85, 2000, 'TestProject', 'projects')
 
         # Initialize list of decision variables
         # DecisionVariable(min, max, initial_value, initial_step_size, convergence_criterion, variable_name)
@@ -45,23 +44,27 @@ class TestQuadratic(unittest.TestCase):
     # exercise the callbacks
     @staticmethod
     def completed(return_value):
-        print("COMPLETED CALLBACK: DONE; reason=" + str(return_value.reason))
+        print("COMPLETED CALLBACK: DONE; reason=" + ReturnStateEnum.enum_to_string(return_value.reason))
 
     @staticmethod
     def progress(completed_iteration_number):
         print("PROGRESS CALLBACK: COMPLETED ITERATION #" + str(completed_iteration_number))
 
     def test_quadratic1(self):
-
-        # run the optimizer
+        self.sim = SimulationStructure(1.2, 0.85, 2000, 'TestProject', 'projects')
         searcher = HeuristicSearch(self.sim, self.dvs, self.io, self.sim_quadratic,
                                    self.ssqe_quadratic, self.progress, self.completed)
         response = searcher.search()
-
         self.assertTrue(response.success)
         self.assertAlmostEqual(1.0, response.values[0], 3)
         self.assertAlmostEqual(2.0, response.values[1], 3)
         self.assertAlmostEqual(3.0, response.values[2], 3)
+
+    def test_quadratic_bad_folder(self):
+        self.sim = SimulationStructure(1.2, 0.85, 2000, 'CantWriteToUsr', '/usr')
+        with self.assertRaises(MyPyOptException):
+            HeuristicSearch(self.sim, self.dvs, self.io, self.sim_quadratic,
+                            self.ssqe_quadratic, self.progress, self.completed)
 
 # allow execution directly as python tests/test_solar.py
 if __name__ == '__main__':

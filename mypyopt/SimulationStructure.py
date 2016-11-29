@@ -3,7 +3,7 @@ from Exceptions import MyPyOptException
 
 
 class SimulationStructure(object):
-    def __init__(self, expansion, contraction, max_iterations, project_name, output_dir):
+    def __init__(self, expansion, contraction, max_iterations, project_name, output_dir, verbose=False):
         if not os.path.exists(output_dir):
             try:
                 os.makedirs(output_dir)
@@ -14,3 +14,4 @@ class SimulationStructure(object):
         self.max_iterations = max_iterations
         self.project_name = project_name
         self.output_dir = output_dir
+        self.verbose = verbose

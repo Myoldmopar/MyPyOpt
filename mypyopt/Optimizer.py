@@ -23,7 +23,10 @@ class HeuristicSearch(object):
         # the root project name is created/validated by the sim constructor, set up the folder for this particular run
         timestamp = time.strftime('%Y-%m-%d-%H:%M:%S')
         dir_name = os.path.join(self.sim.output_dir, timestamp + self.sim.project_name)
-        os.mkdir(dir_name)
+        try:
+            os.mkdir(dir_name)
+        except OSError:
+            raise MyPyOptException("Couldn't create project folder, check permissions, aborting...")
 
         # output optimization information so we don't have to look in the source
         project_info_file_name = os.path.join(dir_name, 'project_info.json')
@@ -44,7 +47,7 @@ class HeuristicSearch(object):
 
     def search(self):
 
-        self.io.write_line(True, self.full_output_file, '*******Optimization Beginning*******')
+        self.io.write_line(True, self.full_output_file, '\n*******Optimization Beginning*******')
 
         # evaluate starting point
         base_values = {dv.var_name: dv.x_base for dv in self.dvs}
@@ -68,8 +71,7 @@ class HeuristicSearch(object):
         # begin iteration loop
         for iteration in range(1, self.sim.max_iterations + 1):
 
-            self.io.write_line(True, self.full_output_file, '*****')
-            self.io.write_line(True, self.full_output_file, 'iter = ' + str(iteration))
+            self.io.write_line(self.sim.verbose, self.full_output_file, 'iter = ' + str(iteration))
 
             if os.path.exists(self.io.stopFile):
                 self.io.write_line(True, self.full_output_file,
@@ -98,12 +100,13 @@ class HeuristicSearch(object):
                 obj_new = self.f_of_x(new_values)
                 j_new = obj_new.value
 
-                self.io.write_line(True, self.full_output_file, 'iter=' + str(iteration))
-                self.io.write_line(True, self.full_output_file, 'var=' + str(dv))
-                self.io.write_line(True, self.full_output_file, 'x_base=' + str([x.x_base for x in self.dvs]))
-                self.io.write_line(True, self.full_output_file, 'j_base=' + str(j_base))
-                self.io.write_line(True, self.full_output_file, 'x_new=' + str([x.x_new for x in self.dvs]))
-                self.io.write_line(True, self.full_output_file, 'j_new=' + str(j_new))
+                w = self.io.write_line
+                w(self.sim.verbose, self.full_output_file, 'iter=' + str(iteration))
+                w(self.sim.verbose, self.full_output_file, 'var=' + str(dv))
+                w(self.sim.verbose, self.full_output_file, 'x_base=' + str([x.x_base for x in self.dvs]))
+                w(self.sim.verbose, self.full_output_file, 'j_base=' + str(j_base))
+                w(self.sim.verbose, self.full_output_file, 'x_new=' + str([x.x_new for x in self.dvs]))
+                w(self.sim.verbose, self.full_output_file, 'j_new=' + str(j_new))
 
                 if obj_new.return_state == ReturnStateEnum.UnsuccessfulOther:
                     self.io.write_line(True, self.full_output_file,
@@ -117,13 +120,13 @@ class HeuristicSearch(object):
                 elif (not obj_new.return_state == ReturnStateEnum.Successful) or (j_new > j_base):
                     dv.delta_x = -self.sim.coefficient_contract * dv.delta_x
                     dv.x_new = dv.x_base
-                    self.io.write_line(True, self.full_output_file,
+                    self.io.write_line(self.sim.verbose, self.full_output_file,
                                        '## Unsuccessful objective evaluation, or worse result, going back ##')
                 else:
                     j_base = j_new
                     dv.x_base = dv.x_new
                     dv.delta_x = self.sim.coefficient_expand * dv.delta_x
-                    self.io.write_line(True, self.full_output_file,
+                    self.io.write_line(self.sim.verbose, self.full_output_file,
                                        '## Improved result, accepting and continuing forward ##')
 
             converged = True
@@ -133,7 +136,7 @@ class HeuristicSearch(object):
                     break
 
             if converged:
-                self.io.write_line(True, self.full_output_file, 'converged')
+                self.io.write_line(True, self.full_output_file, '*******Converged*******')
                 converged_values = [x.x_new for x in self.dvs]
                 r = SearchReturnType(True, ReturnStateEnum.Successful, converged_values)
                 if self.cb_completed:
