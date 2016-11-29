@@ -1,8 +1,9 @@
 import os
 import time
+import json
 
-from inputoutput import IOErrorReturnValues
-from structures import ReturnStateEnum, ObjectiveEvaluation
+from Enums import IOErrorReturnValues, ReturnStateEnum
+from ObjectiveEvaluation import ObjectiveEvaluation
 
 
 class HeuristicSearch(object):
@@ -20,41 +21,26 @@ class HeuristicSearch(object):
         self.converged = False
         self.converged_values = None
 
-        # validate DV array, use the convergence criterion init value as a flag for non-initialized array items
-        if any([x.convergence_criteria == 0 for x in dvs]):
-            print('DV array contains an item with zero convergence criteria, verify numDVs parameter, aborting...')
-            self.status = IOErrorReturnValues.Err_InvalidDVarray
-            return
-
-        # set up the root dir name
-        if not os.path.exists(self.sim.output_dir):
-            try:
-                os.makedirs(self.sim.output_dir)
-            except os.error:
-                print("Couldn't create root folder, aborting...")
-                self.status = IOErrorReturnValues.Err_FileWritingProblem
-                return
-
-        dir_name = os.path.join(self.sim.output_dir, time.strftime('%Y-%m-%d-%H:%M:%S' + self.sim.project_name))
+        # the root project name is created/validated by the sim constructor, set up the folder for this particular run
+        timestamp = time.strftime('%Y-%m-%d-%H:%M:%S')
+        dir_name = os.path.join(self.sim.output_dir, timestamp + self.sim.project_name)
         os.mkdir(dir_name)
 
         # output optimization information so we don't have to look in the source
-        project_info_file_name = os.path.join(dir_name, 'project_info.txt')
+        project_info_file_name = os.path.join(dir_name, 'project_info.json')
         with open(project_info_file_name, 'w') as f:
-            f.write("Variable Name, Min Value, Max Value, Initial Value, Initial Step Size, Convergence Criterion\n")
-            for dv in dvs:
-                f.write(','.join(str(x) for x in [dv.var_name, dv.value_minimum, dv.value_maximum, dv.value_initial,
-                                                  dv.step_size_initial, dv.convergence_criteria]) + '\n')
+            project_info = dict()
+            project_info['project_name'] = self.sim.project_name
+            project_info['timestamp'] = timestamp
+            project_info['decision_variables'] = [d.to_dictionary() for d in self.dvs]
+            f.write(json.dumps(project_info, indent=2))
 
         # remove any previous files and open clean versions of the log files
         self.full_output_file = open(os.path.join(dir_name, 'full_output.log'), 'w')
         if os.path.exists(io.stopFile):
             os.remove(io.stopFile)
 
-        # start iterating!
-        self.perform_iteration_loop()
-
-    def perform_iteration_loop(self):
+    def search(self):
 
         self.io.write_line(True, self.full_output_file, '*******Optimization Beginning*******')
 
@@ -117,14 +103,14 @@ class HeuristicSearch(object):
                                        'Error message: ' + str(obj_new.message))
                     return IOErrorReturnValues.Err_UnexpectedError
                 elif (not obj_new.return_state == ReturnStateEnum.Return_state_successful) or (j_new > j_base):
-                    dv.delta_x = -self.sim.coeff_contract * dv.delta_x
+                    dv.delta_x = -self.sim.coefficient_contract * dv.delta_x
                     dv.x_new = dv.x_base
                     self.io.write_line(True, self.full_output_file,
                                        '## Unsuccessful objective evaluation, or worse result, going back ##')
                 else:
                     j_base = j_new
                     dv.x_base = dv.x_new
-                    dv.delta_x = self.sim.coeff_expand * dv.delta_x
+                    dv.delta_x = self.sim.coefficient_expand * dv.delta_x
                     self.io.write_line(True, self.full_output_file,
                                        '## Improved result, accepting and continuing forward ##')
 

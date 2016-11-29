@@ -1,15 +1,13 @@
-# This file exhaustively tests the entirety of lib/solar.py
-
 import sys
 import os
 import unittest
 
-# add the source directory to the path so the unit test framework can find it
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'mypyopt'))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
 
-from structures import DecisionVariable, SimulationStructure
-from inputoutput import InputOutputManager
-from optimizer import HeuristicSearch
+from mypyopt.SimulationStructure import SimulationStructure
+from mypyopt.InputOutput import InputOutputManager
+from mypyopt.DecisionVariable import DecisionVariable
+from mypyopt.Optimizer import HeuristicSearch
 
 
 class TestQuadratic(unittest.TestCase):
@@ -42,6 +40,8 @@ class TestQuadratic(unittest.TestCase):
 
         # run the optimizer
         searcher = HeuristicSearch(sim, dvs, io, sim_quadratic, ssqe_quadratic)
+        searcher.search()
+
         self.assertTrue(searcher.converged)
         self.assertAlmostEqual(1.0, searcher.converged_values[0], 3)
         self.assertAlmostEqual(2.0, searcher.converged_values[1], 3)

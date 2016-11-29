@@ -1,0 +1,2 @@
+class MyPyOptException(Exception):
+    pass

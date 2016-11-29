@@ -1,6 +1,8 @@
-from mypyopt.structures import DecisionVariable, SimulationStructure
-from mypyopt.inputoutput import InputOutputManager
-from mypyopt.optimizer import HeuristicSearch
+from mypyopt.DecisionVariable import DecisionVariable
+from mypyopt.SimulationStructure import SimulationStructure
+from mypyopt.InputOutput import InputOutputManager
+from mypyopt.Optimizer import HeuristicSearch
+
 
 # Initialize simulation structure
 # SimulationStructure(expansion, contraction, max_iterations)
@@ -33,3 +35,4 @@ def ssqe_quadratic(sim_values):
 
 # run the optimizer
 searcher = HeuristicSearch(sim, dvs, io, sim_quadratic, ssqe_quadratic)
+searcher.search()
