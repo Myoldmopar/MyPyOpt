@@ -45,8 +45,8 @@ class HeuristicSearch(object):
         self.io.write_line(True, self.full_output_file, '*******Optimization Beginning*******')
 
         # evaluate starting point
-        base_vals = {dv.var_name: dv.x_base for dv in self.dvs}
-        obj_base = self.f_of_x(base_vals)
+        base_values = {dv.var_name: dv.x_base for dv in self.dvs}
+        obj_base = self.f_of_x(base_values)
         j_base = obj_base.value
         if obj_base.return_state == ReturnStateEnum.Return_state_useraborted:
             self.io.write_line(True, self.full_output_file,
@@ -72,7 +72,7 @@ class HeuristicSearch(object):
 
                 # setup a new point
                 dv.x_new = dv.x_base + dv.delta_x
-                new_vals = {dv.var_name: dv.x_new for dv in self.dvs}
+                new_values = {dv.var_name: dv.x_new for dv in self.dvs}
 
                 if dv.x_new > dv.value_maximum or dv.x_new < dv.value_minimum:
                     self.io.write_line(True, self.full_output_file,
@@ -80,7 +80,7 @@ class HeuristicSearch(object):
                     return ReturnStateEnum.Return_state_infeasibleDV
 
                 # then evaluate the new point
-                obj_new = self.f_of_x(new_vals)
+                obj_new = self.f_of_x(new_values)
                 j_new = obj_new.value
 
                 self.io.write_line(True, self.full_output_file,
@@ -113,8 +113,6 @@ class HeuristicSearch(object):
                     dv.delta_x = self.sim.coefficient_expand * dv.delta_x
                     self.io.write_line(True, self.full_output_file,
                                        '## Improved result, accepting and continuing forward ##')
-
-                    # check if we went out of range
 
             converged = True
             for dv in self.dvs:
