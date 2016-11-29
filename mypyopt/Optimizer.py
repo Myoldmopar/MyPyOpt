@@ -9,7 +9,7 @@ from Exceptions import MyPyOptException
 
 
 class HeuristicSearch(object):
-    def __init__(self, sim, dvs, io, sim_function, ssqe_function):
+    def __init__(self, sim, dvs, io, sim_function, ssqe_function, cb_progress=None, cb_completed=None):
 
         # store the settings
         self.sim = sim
@@ -17,6 +17,8 @@ class HeuristicSearch(object):
         self.io = io
         self.sim_func = sim_function
         self.ssqe = ssqe_function
+        self.cb_progress = cb_progress
+        self.cb_completed = cb_completed
 
         # the root project name is created/validated by the sim constructor, set up the folder for this particular run
         timestamp = time.strftime('%Y-%m-%d-%H:%M:%S')
@@ -51,11 +53,17 @@ class HeuristicSearch(object):
         if obj_base.return_state == ReturnStateEnum.UserAborted:
             self.io.write_line(True, self.full_output_file,
                                'User aborted simulation via stop signal file...')
-            return SearchReturnType(False, ReturnStateEnum.UserAborted)
+            r = SearchReturnType(False, ReturnStateEnum.UserAborted)
+            if self.cb_completed:
+                self.cb_completed(r)
+            return r
         elif not obj_base.return_state == ReturnStateEnum.Successful:
             self.io.write_line(True, self.full_output_file,
                                'Initial point is infeasible or invalid, cannot begin iterations.  Aborting...')
-            return SearchReturnType(False, ReturnStateEnum.InvalidInitialPoint)
+            r = SearchReturnType(False, ReturnStateEnum.InvalidInitialPoint)
+            if self.cb_completed:
+                self.cb_completed(r)
+            return r
 
         # begin iteration loop
         for iteration in range(1, self.sim.max_iterations + 1):
@@ -66,7 +74,10 @@ class HeuristicSearch(object):
             if os.path.exists(self.io.stopFile):
                 self.io.write_line(True, self.full_output_file,
                                    'Found stop signal file in run directory; stopping now...')
-                return SearchReturnType(False, ReturnStateEnum.UserAborted)
+                r = SearchReturnType(False, ReturnStateEnum.UserAborted)
+                if self.cb_completed:
+                    self.cb_completed(r)
+                return r
 
             # begin DV loop
             for dv in self.dvs:
@@ -78,7 +89,10 @@ class HeuristicSearch(object):
                 if dv.x_new > dv.value_maximum or dv.x_new < dv.value_minimum:
                     self.io.write_line(True, self.full_output_file,
                                        'infeasible DV, name=' + dv.var_name)
-                    return SearchReturnType(False, ReturnStateEnum.InfeasibleDV)
+                    r = SearchReturnType(False, ReturnStateEnum.InfeasibleDV)
+                    if self.cb_completed:
+                        self.cb_completed(r)
+                    return r
 
                 # then evaluate the new point
                 obj_new = self.f_of_x(new_values)
@@ -96,7 +110,10 @@ class HeuristicSearch(object):
                                        'Optimization ended unexpectedly, check all inputs and outputs')
                     self.io.write_line(True, self.full_output_file,
                                        'Error message: ' + str(obj_new.message))
-                    return SearchReturnType(False, ReturnStateEnum.UnsuccessfulOther)
+                    r = SearchReturnType(False, ReturnStateEnum.UnsuccessfulOther)
+                    if self.cb_completed:
+                        self.cb_completed(r)
+                    return r
                 elif (not obj_new.return_state == ReturnStateEnum.Successful) or (j_new > j_base):
                     dv.delta_x = -self.sim.coefficient_contract * dv.delta_x
                     dv.x_new = dv.x_base
@@ -118,7 +135,10 @@ class HeuristicSearch(object):
             if converged:
                 self.io.write_line(True, self.full_output_file, 'converged')
                 converged_values = [x.x_new for x in self.dvs]
-                return SearchReturnType(True, ReturnStateEnum.Successful, converged_values)
+                r = SearchReturnType(True, ReturnStateEnum.Successful, converged_values)
+                if self.cb_completed:
+                    self.cb_completed(r)
+                return r
 
     # raw data sum of square error
     def f_of_x(self, parameter_hash):
