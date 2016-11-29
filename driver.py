@@ -33,6 +33,14 @@ def ssqe_quadratic(sim_values):
     return sum(sqe)
 
 
+# exercise the callbacks
+def completed(return_value):
+    print("COMPLETED CALLBACK: DONE; reason=")
+
+
+def progress(completed_iteration_number):
+    print("PROGRESS CALLBACK: COMPLETED ITERATION #" + str(completed_iteration_number))
+
 # run the optimizer
-searcher = HeuristicSearch(sim, dvs, io, sim_quadratic, ssqe_quadratic)
+searcher = HeuristicSearch(sim, dvs, io, sim_quadratic, ssqe_quadratic, progress, completed)
 searcher.search()

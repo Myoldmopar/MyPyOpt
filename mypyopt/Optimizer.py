@@ -140,6 +140,9 @@ class HeuristicSearch(object):
                     self.cb_completed(r)
                 return r
 
+            if self.cb_progress:
+                self.cb_progress(iteration)
+
     # raw data sum of square error
     def f_of_x(self, parameter_hash):
 
