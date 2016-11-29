@@ -1,5 +1,5 @@
 class ObjectiveEvaluation(object):
-    def __init__(self):
-        self.return_state = 0
-        self.message = ''
-        self.value = 0.0
+    def __init__(self, state, value, message=''):
+        self.return_state = state
+        self.message = message
+        self.value = value

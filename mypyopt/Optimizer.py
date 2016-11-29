@@ -2,8 +2,10 @@ import os
 import time
 import json
 
-from Enums import IOErrorReturnValues, ReturnStateEnum
+from Enums import ReturnStateEnum
 from ObjectiveEvaluation import ObjectiveEvaluation
+from SearchReturnType import SearchReturnType
+from Exceptions import MyPyOptException
 
 
 class HeuristicSearch(object):
@@ -15,11 +17,6 @@ class HeuristicSearch(object):
         self.io = io
         self.sim_func = sim_function
         self.ssqe = ssqe_function
-
-        # set this flag for later inspection
-        self.status = IOErrorReturnValues.Success
-        self.converged = False
-        self.converged_values = None
 
         # the root project name is created/validated by the sim constructor, set up the folder for this particular run
         timestamp = time.strftime('%Y-%m-%d-%H:%M:%S')
@@ -38,7 +35,10 @@ class HeuristicSearch(object):
         # remove any previous files and open clean versions of the log files
         self.full_output_file = open(os.path.join(dir_name, 'full_output.log'), 'w')
         if os.path.exists(io.stopFile):
-            os.remove(io.stopFile)
+            try:
+                os.remove(io.stopFile)
+            except OSError:
+                raise MyPyOptException("Found stop file, but couldn't remove it, check permissions, aborting...")
 
     def search(self):
 
@@ -48,13 +48,14 @@ class HeuristicSearch(object):
         base_values = {dv.var_name: dv.x_base for dv in self.dvs}
         obj_base = self.f_of_x(base_values)
         j_base = obj_base.value
-        if obj_base.return_state == ReturnStateEnum.Return_state_useraborted:
+        if obj_base.return_state == ReturnStateEnum.UserAborted:
             self.io.write_line(True, self.full_output_file,
                                'User aborted simulation via stop signal file...')
-        elif not obj_base.return_state == ReturnStateEnum.Return_state_successful:
+            return SearchReturnType(False, ReturnStateEnum.UserAborted)
+        elif not obj_base.return_state == ReturnStateEnum.Successful:
             self.io.write_line(True, self.full_output_file,
                                'Initial point is infeasible or invalid, cannot begin iterations.  Aborting...')
-            return IOErrorReturnValues.Err_InvalidInitialPoint
+            return SearchReturnType(False, ReturnStateEnum.InvalidInitialPoint)
 
         # begin iteration loop
         for iteration in range(1, self.sim.max_iterations + 1):
@@ -65,7 +66,7 @@ class HeuristicSearch(object):
             if os.path.exists(self.io.stopFile):
                 self.io.write_line(True, self.full_output_file,
                                    'Found stop signal file in run directory; stopping now...')
-                return IOErrorReturnValues.Err_FoundStopFile
+                return SearchReturnType(False, ReturnStateEnum.UserAborted)
 
             # begin DV loop
             for dv in self.dvs:
@@ -77,32 +78,26 @@ class HeuristicSearch(object):
                 if dv.x_new > dv.value_maximum or dv.x_new < dv.value_minimum:
                     self.io.write_line(True, self.full_output_file,
                                        'infeasible DV, name=' + dv.var_name)
-                    return ReturnStateEnum.Return_state_infeasibleDV
+                    return SearchReturnType(False, ReturnStateEnum.InfeasibleDV)
 
                 # then evaluate the new point
                 obj_new = self.f_of_x(new_values)
                 j_new = obj_new.value
 
-                self.io.write_line(True, self.full_output_file,
-                                   'iter=' + str(iteration))
-                self.io.write_line(True, self.full_output_file,
-                                   'var=' + str(dv))
-                self.io.write_line(True, self.full_output_file,
-                                   'x_base=' + str([x.x_base for x in self.dvs]))
-                self.io.write_line(True, self.full_output_file,
-                                   'j_base=' + str(j_base))
-                self.io.write_line(True, self.full_output_file,
-                                   'x_new=' + str([x.x_new for x in self.dvs]))
-                self.io.write_line(True, self.full_output_file,
-                                   'j_new=' + str(j_new))
+                self.io.write_line(True, self.full_output_file, 'iter=' + str(iteration))
+                self.io.write_line(True, self.full_output_file, 'var=' + str(dv))
+                self.io.write_line(True, self.full_output_file, 'x_base=' + str([x.x_base for x in self.dvs]))
+                self.io.write_line(True, self.full_output_file, 'j_base=' + str(j_base))
+                self.io.write_line(True, self.full_output_file, 'x_new=' + str([x.x_new for x in self.dvs]))
+                self.io.write_line(True, self.full_output_file, 'j_new=' + str(j_new))
 
-                if obj_new.return_state == ReturnStateEnum.Return_state_unsuccessfulOther:
+                if obj_new.return_state == ReturnStateEnum.UnsuccessfulOther:
                     self.io.write_line(True, self.full_output_file,
                                        'Optimization ended unexpectedly, check all inputs and outputs')
                     self.io.write_line(True, self.full_output_file,
                                        'Error message: ' + str(obj_new.message))
-                    return IOErrorReturnValues.Err_UnexpectedError
-                elif (not obj_new.return_state == ReturnStateEnum.Return_state_successful) or (j_new > j_base):
+                    return SearchReturnType(False, ReturnStateEnum.UnsuccessfulOther)
+                elif (not obj_new.return_state == ReturnStateEnum.Successful) or (j_new > j_base):
                     dv.delta_x = -self.sim.coefficient_contract * dv.delta_x
                     dv.x_new = dv.x_base
                     self.io.write_line(True, self.full_output_file,
@@ -122,27 +117,19 @@ class HeuristicSearch(object):
 
             if converged:
                 self.io.write_line(True, self.full_output_file, 'converged')
-                self.converged = True
-                self.converged_values = [x.x_new for x in self.dvs]
-                break
+                converged_values = [x.x_new for x in self.dvs]
+                return SearchReturnType(True, ReturnStateEnum.Successful, converged_values)
 
     # raw data sum of square error
     def f_of_x(self, parameter_hash):
 
-        # return value
-        obj = ObjectiveEvaluation()
-
         # run the simulation function
         current_f = self.sim_func(parameter_hash)
 
-        # for now assume everything went OK?
-        if not current_f:
-            obj.return_state = ReturnStateEnum.Return_state_infeasibleObj
-            obj.message = 'infeasible simulation result'
-            return
-
-        # so everything has run OK so far...calculate the ssqe and leave
-        obj.return_state = ReturnStateEnum.Return_state_successful
-        obj.value = self.ssqe(current_f)
-
-        return obj
+        # the sim function should return None if it failed (for now)
+        if current_f:
+            sum_squares_error = self.ssqe(current_f)
+            return ObjectiveEvaluation(ReturnStateEnum.Successful, sum_squares_error)
+        else:
+            return ObjectiveEvaluation(ReturnStateEnum.InfeasibleObj, None,
+                                       'Function f(x) failed, probably infeasible output')

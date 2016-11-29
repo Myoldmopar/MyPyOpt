@@ -40,12 +40,12 @@ class TestQuadratic(unittest.TestCase):
 
         # run the optimizer
         searcher = HeuristicSearch(sim, dvs, io, sim_quadratic, ssqe_quadratic)
-        searcher.search()
+        response = searcher.search()
 
-        self.assertTrue(searcher.converged)
-        self.assertAlmostEqual(1.0, searcher.converged_values[0], 3)
-        self.assertAlmostEqual(2.0, searcher.converged_values[1], 3)
-        self.assertAlmostEqual(3.0, searcher.converged_values[2], 3)
+        self.assertTrue(response.success)
+        self.assertAlmostEqual(1.0, response.values[0], 3)
+        self.assertAlmostEqual(2.0, response.values[1], 3)
+        self.assertAlmostEqual(3.0, response.values[2], 3)
 
 # allow execution directly as python tests/test_solar.py
 if __name__ == '__main__':
