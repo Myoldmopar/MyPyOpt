@@ -9,6 +9,10 @@ from Exceptions import MyPyOptException
 
 
 class HeuristicSearch(object):
+    """
+    This class implements a heuristic, multi-variable, search optimization technique.
+    """
+
     def __init__(self, sim, dvs, io, sim_function, ssqe_function, cb_progress=None, cb_completed=None):
 
         # store the settings
@@ -46,6 +50,10 @@ class HeuristicSearch(object):
                 raise MyPyOptException("Found stop file, but couldn't remove it, check permissions, aborting...")
 
     def search(self):
+        """
+        This is the main driver function for the optimization.
+        It walks the parameter space finding a minimum objective function.
+        """
 
         self.io.write_line(True, self.full_output_file, '\n*******Optimization Beginning*******')
 
@@ -148,6 +156,9 @@ class HeuristicSearch(object):
 
     # raw data sum of square error
     def f_of_x(self, parameter_hash):
+        """
+        This function calls the previously defined "simulation" callback function, and calculates the SSQE.
+        """
 
         # run the simulation function
         current_f = self.sim_func(parameter_hash)

@@ -6,12 +6,21 @@
 Welcome to MyPyOpt's documentation!
 ===================================
 
+Hello
+
 Contents:
 
 .. toctree::
    :maxdepth: 2
 
-
+   DecisionVariable
+   Exceptions
+   InputOutput
+   ObjectiveEvaluation
+   OptimizationStructure
+   Optimizer
+   ReturnStateEnum
+   SearchReturnType
 
 Indices and tables
 ==================
