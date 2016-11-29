@@ -21,12 +21,6 @@ class HeuristicSearch(object):
         self.converged = False
         self.converged_values = None
 
-        # validate DV array, it must have upper bound <= 9 because of the sed operation and format statement
-        if len(dvs) > 9:
-            print('DV array upper bound > 9, aborting...')
-            self.status = IOErrorReturnValues.Err_InvalidDVarray
-            return
-
         # validate DV array, use the convergence criterion init value as a flag for non-initialized array items
         if any([x.convergence_criteria == 0 for x in dvs]):
             print('DV array contains an item with zero convergence criteria, verify numDVs parameter, aborting...')
