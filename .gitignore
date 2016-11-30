@@ -93,3 +93,5 @@ ENV/
 
 # my files
 projects
+in.json
+out.csv

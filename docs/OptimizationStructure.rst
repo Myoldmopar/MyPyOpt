@@ -1,7 +1,7 @@
 Optimization Project Structure Class Documentation
 ==================================================
 
-.. automodule:: SimulationStructure
+.. automodule:: ProjectStructure
     :members:
     :undoc-members:
     :show-inheritance:

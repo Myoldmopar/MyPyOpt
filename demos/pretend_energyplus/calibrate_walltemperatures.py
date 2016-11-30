@@ -8,7 +8,7 @@ import subprocess
 this_dir = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.join(this_dir, '../..'))
 
-from mypyopt.SimulationStructure import SimulationStructure
+from mypyopt.ProjectStructure import ProjectStructure
 from mypyopt.InputOutput import InputOutputManager
 from mypyopt.DecisionVariable import DecisionVariable
 from mypyopt.Optimizer import HeuristicSearch
@@ -49,6 +49,6 @@ dvs.append(DecisionVariable(-100, 100, 10, 1, 0.0001, 'min_outdoor_temp'))  # op
 # Initialize the IO manager
 io = InputOutputManager()
 
-sim = SimulationStructure(1.2, 0.85, 2000, 'RunPretendEnergyPlus', 'projects', True)
+sim = ProjectStructure(1.2, 0.85, 2000, 'RunPretendEnergyPlus', 'projects', True)
 searcher = HeuristicSearch(sim, dvs, io, sim_pretend_energyplus, ssqe_pretend_energyplus)
 response = searcher.search()

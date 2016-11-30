@@ -4,7 +4,7 @@ import unittest
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
 
-from mypyopt.SimulationStructure import SimulationStructure
+from mypyopt.ProjectStructure import ProjectStructure
 from mypyopt.InputOutput import InputOutputManager
 from mypyopt.DecisionVariable import DecisionVariable
 from mypyopt.Optimizer import HeuristicSearch
@@ -50,7 +50,7 @@ class TestQuadratic(unittest.TestCase):
         print("PROGRESS CALLBACK: COMPLETED ITERATION #" + str(completed_iteration_number))
 
     def test_quadratic1(self):
-        self.sim = SimulationStructure(1.2, 0.85, 2000, 'TestProject', 'projects')
+        self.sim = ProjectStructure(1.2, 0.85, 2000, 'TestProject', 'projects')
         searcher = HeuristicSearch(self.sim, self.dvs, self.io, self.sim_quadratic,
                                    self.ssqe_quadratic, self.progress, self.completed)
         response = searcher.search()
@@ -60,7 +60,7 @@ class TestQuadratic(unittest.TestCase):
         self.assertAlmostEqual(3.0, response.values[2], 3)
 
     def test_quadratic_bad_folder(self):
-        self.sim = SimulationStructure(1.2, 0.85, 2000, 'CantWriteToUsr', '/usr')
+        self.sim = ProjectStructure(1.2, 0.85, 2000, 'CantWriteToUsr', '/usr')
         with self.assertRaises(MyPyOptException):
             HeuristicSearch(self.sim, self.dvs, self.io, self.sim_quadratic,
                             self.ssqe_quadratic, self.progress, self.completed)

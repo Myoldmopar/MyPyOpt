@@ -2,7 +2,7 @@ import os
 from Exceptions import MyPyOptException
 
 
-class SimulationStructure(object):
+class ProjectStructure(object):
     def __init__(self, expansion, contraction, max_iterations, project_name, output_dir, verbose=False):
         if not os.path.exists(output_dir):
             try:

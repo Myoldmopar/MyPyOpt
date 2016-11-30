@@ -6,7 +6,7 @@ import subprocess
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../..'))
 
-from mypyopt.SimulationStructure import SimulationStructure
+from mypyopt.ProjectStructure import ProjectStructure
 from mypyopt.InputOutput import InputOutputManager
 from mypyopt.DecisionVariable import DecisionVariable
 from mypyopt.Optimizer import HeuristicSearch
@@ -36,6 +36,6 @@ dvs.append(DecisionVariable(0, 100, 10, 1, 0.001, 'wall_resistance'))  # opt val
 # Initialize the IO manager
 io = InputOutputManager()
 
-sim = SimulationStructure(1.2, 0.85, 2000, 'CalibrateWallResistance', 'projects', True)
+sim = ProjectStructure(1.2, 0.85, 2000, 'CalibrateWallResistance', 'projects', True)
 searcher = HeuristicSearch(sim, dvs, io, sim_wall_heat_transfer, ssqe_wall_heat_flux)
 response = searcher.search()
