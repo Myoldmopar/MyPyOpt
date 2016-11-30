@@ -1,11 +1,12 @@
 import sys
 import os
 import shutil
+import subprocess
 import unittest
 from test import test_main
 
 
-valid_args = ['test', 'clean_projects', 'usage']
+valid_args = ['test', 'clean_projects', 'usage', 'docs']
 
 
 def usage():
@@ -27,6 +28,9 @@ elif sys.argv[1] == valid_args[1]:
     sys.exit(0)
 elif sys.argv[1] == valid_args[2]:
     usage()
+    sys.exit(0)
+elif sys.argv[1] == valid_args[3]:
+    subprocess.call(['make', '-C', 'docs', 'html'])
     sys.exit(0)
 else:
     print("Error: Invalid command line argument passed in!")

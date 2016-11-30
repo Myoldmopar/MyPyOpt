@@ -2,7 +2,21 @@ from Exceptions import MyPyOptException
 
 
 class DecisionVariable(object):
+    """
+    A structure for defining a single dimension in the optimization parameter space
+    """
     def __init__(self, minimum, maximum, initial_value, initial_step_size, convergence_criterion, variable_name):
+        """
+        The constructor for this class, which does all initialization and expects all arguments to be valid
+
+        :param minimum: The minimum value allowed for this decision variable during the optimization process
+        :param maximum: The maximum value allowed for this decision variable during the optimization process
+        :param initial_value: The initial value of this decision variable for creating the initial point
+        :param initial_step_size: The initial step size when walking this decision variable around the parameter space
+        :param convergence_criterion: The maximum change between two iterations to specify this variable as converged
+        :param variable_name: A string identifier for this variable that is used in looking up the value in the callback functions
+        :raises MyPyOptException: If the numeric conditions given in the arguments are invalid
+        """
         if not variable_name:
             variable_name = "BLANK DV NAME"
         if minimum > maximum or initial_step_size <= 0 or convergence_criterion <= 0:
@@ -18,6 +32,11 @@ class DecisionVariable(object):
         self.delta_x = initial_step_size
 
     def to_dictionary(self):
+        """
+        Converts the meaningful parts of this decision variable into a dictionary for project summary reports
+
+        :return: Dictionary of decision variable information
+        """
         d = dict()
         d['value_minimum'] = self.value_minimum
         d['value_maximum'] = self.value_maximum

@@ -1,9 +1,23 @@
 import os
+
 from Exceptions import MyPyOptException
 
 
 class ProjectStructure(object):
+    """
+    This class defines high level project-wide settings
+    """
     def __init__(self, expansion, contraction, max_iterations, project_name, output_dir, verbose=False):
+        """
+        Constructor for this class
+
+        :param expansion: The expansion coefficient for walking through the parameter space in a favorable direction
+        :param contraction: The contraction coefficient for walking through the parameter space in a poor direction
+        :param max_iterations: The maximum number of iterations to sweep the entire parameter space
+        :param project_name: A descriptive name for this project
+        :param output_dir: The root output directory to use for writing output data
+        :param verbose: A boolean to decide whether to write a lot to the command line or not
+        """
         if not os.path.exists(output_dir):
             try:
                 os.makedirs(output_dir)

@@ -6,7 +6,13 @@
 Welcome to MyPyOpt's documentation!
 ===================================
 
-Hello
+This project is a very minimal optimization tool in Python.  The basis for this work was my own development in
+an optimization course in grad school.  The original implementation was in Fortran, but I converted it to Python,
+cleaned it up drastically, added tests and CI, docs, etc., and here it is.
+
+The easiest way to see it in action is to check out the demos folder in the repository.  It has demonstrations that use
+a simple Python function call as the simulation, and also one that pretends like it is calling EnergyPlus, both
+then calibrating given specific decision variables and an objective to minimize.
 
 Contents:
 
