@@ -1,11 +1,11 @@
+import json
 import os
 import time
-import json
 
-from ReturnStateEnum import ReturnStateEnum
-from ObjectiveEvaluation import ObjectiveEvaluation
-from SearchReturnType import SearchReturnType
 from Exceptions import MyPyOptException
+from ObjectiveEvaluation import ObjectiveEvaluation
+from ReturnStateEnum import ReturnStateEnum
+from SearchReturnType import SearchReturnType
 
 
 class HeuristicSearch(object):
@@ -13,20 +13,23 @@ class HeuristicSearch(object):
     This class implements a heuristic, multi-variable, search optimization technique.
     """
 
-    def __init__(self, sim, dvs, io, sim_function, ssqe_function, cb_progress=None, cb_completed=None):
+    def __init__(self, project_settings, decision_variable_array, input_output_worker, cb_f_of_x, cb_objective,
+                 cb_progress=None, cb_completed=None):
 
         # store the settings
-        self.sim = sim
-        self.dvs = dvs
-        self.io = io
-        self.sim_func = sim_function
-        self.ssqe = ssqe_function
+        self.project = project_settings
+        self.dvs = decision_variable_array
+        self.io = input_output_worker
+
+        # store the callback functions, which may be "None" for the progress/completed callbacks
+        self.cb_f_of_x = cb_f_of_x
+        self.cb_objective = cb_objective
         self.cb_progress = cb_progress
         self.cb_completed = cb_completed
 
         # the root project name is created/validated by the sim constructor, set up the folder for this particular run
         timestamp = time.strftime('%Y-%m-%d-%H:%M:%S')
-        dir_name = os.path.join(self.sim.output_dir, timestamp + self.sim.project_name)
+        dir_name = os.path.join(self.project.output_dir, timestamp + self.project.project_name)
         try:
             os.mkdir(dir_name)
         except OSError:
@@ -36,16 +39,16 @@ class HeuristicSearch(object):
         project_info_file_name = os.path.join(dir_name, 'project_info.json')
         with open(project_info_file_name, 'w') as f:
             project_info = dict()
-            project_info['project_name'] = self.sim.project_name
+            project_info['project_name'] = self.project.project_name
             project_info['timestamp'] = timestamp
             project_info['decision_variables'] = [d.to_dictionary() for d in self.dvs]
             f.write(json.dumps(project_info, indent=2))
 
         # remove any previous files and open clean versions of the log files
         self.full_output_file = open(os.path.join(dir_name, 'full_output.log'), 'w')
-        if os.path.exists(io.stopFile):
+        if os.path.exists(self.io.stopFile):
             try:
-                os.remove(io.stopFile)
+                os.remove(self.io.stopFile)
             except OSError:
                 raise MyPyOptException("Found stop file, but couldn't remove it, check permissions, aborting...")
 
@@ -77,9 +80,9 @@ class HeuristicSearch(object):
             return r
 
         # begin iteration loop
-        for iteration in range(1, self.sim.max_iterations + 1):
+        for iteration in range(1, self.project.max_iterations + 1):
 
-            self.io.write_line(self.sim.verbose, self.full_output_file, 'iter = ' + str(iteration))
+            self.io.write_line(self.project.verbose, self.full_output_file, 'iter = ' + str(iteration))
 
             if os.path.exists(self.io.stopFile):
                 self.io.write_line(True, self.full_output_file,
@@ -109,12 +112,12 @@ class HeuristicSearch(object):
                 j_new = obj_new.value
 
                 w = self.io.write_line
-                w(self.sim.verbose, self.full_output_file, 'iter=' + str(iteration))
-                w(self.sim.verbose, self.full_output_file, 'var=' + str(dv))
-                w(self.sim.verbose, self.full_output_file, 'x_base=' + str([x.x_base for x in self.dvs]))
-                w(self.sim.verbose, self.full_output_file, 'j_base=' + str(j_base))
-                w(self.sim.verbose, self.full_output_file, 'x_new=' + str([x.x_new for x in self.dvs]))
-                w(self.sim.verbose, self.full_output_file, 'j_new=' + str(j_new))
+                w(self.project.verbose, self.full_output_file, 'iter=' + str(iteration))
+                w(self.project.verbose, self.full_output_file, 'var=' + str(dv))
+                w(self.project.verbose, self.full_output_file, 'x_base=' + str([x.x_base for x in self.dvs]))
+                w(self.project.verbose, self.full_output_file, 'j_base=' + str(j_base))
+                w(self.project.verbose, self.full_output_file, 'x_new=' + str([x.x_new for x in self.dvs]))
+                w(self.project.verbose, self.full_output_file, 'j_new=' + str(j_new))
 
                 if obj_new.return_state == ReturnStateEnum.UnsuccessfulOther:
                     self.io.write_line(True, self.full_output_file,
@@ -126,15 +129,15 @@ class HeuristicSearch(object):
                         self.cb_completed(r)
                     return r
                 elif (not obj_new.return_state == ReturnStateEnum.Successful) or (j_new > j_base):
-                    dv.delta_x = -self.sim.coefficient_contract * dv.delta_x
+                    dv.delta_x = -self.project.coefficient_contract * dv.delta_x
                     dv.x_new = dv.x_base
-                    self.io.write_line(self.sim.verbose, self.full_output_file,
+                    self.io.write_line(self.project.verbose, self.full_output_file,
                                        '## Unsuccessful objective evaluation, or worse result, going back ##')
                 else:
                     j_base = j_new
                     dv.x_base = dv.x_new
-                    dv.delta_x = self.sim.coefficient_expand * dv.delta_x
-                    self.io.write_line(self.sim.verbose, self.full_output_file,
+                    dv.delta_x = self.project.coefficient_expand * dv.delta_x
+                    self.io.write_line(self.project.verbose, self.full_output_file,
                                        '## Improved result, accepting and continuing forward ##')
 
             converged = True
@@ -154,18 +157,19 @@ class HeuristicSearch(object):
             if self.cb_progress:
                 self.cb_progress(iteration)
 
-    # raw data sum of square error
     def f_of_x(self, parameter_hash):
         """
-        This function calls the previously defined "simulation" callback function, and calculates the SSQE.
+        This function calls the "f_of_x" callback function, getting outputs for the current parameter space;
+        then passes those outputs into the objective function callback as an array, which usually returns the SSQE
+        between known values and current outputs.
         """
 
         # run the simulation function
-        current_f = self.sim_func(parameter_hash)
+        current_f = self.cb_f_of_x(parameter_hash)
 
         # the sim function should return None if it failed (for now)
         if current_f:
-            sum_squares_error = self.ssqe(current_f)
+            sum_squares_error = self.cb_objective(current_f)
             return ObjectiveEvaluation(ReturnStateEnum.Successful, sum_squares_error)
         else:
             return ObjectiveEvaluation(ReturnStateEnum.InfeasibleObj, None,
