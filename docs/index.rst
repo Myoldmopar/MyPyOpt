@@ -19,11 +19,12 @@ Contents:
    ObjectiveEvaluation
    OptimizationStructure
    Optimizer
+   OptimizerHeuristicSearch
    ReturnStateEnum
    SearchReturnType
 
-Indices and tables
-==================
+Index and tables
+================
 
 * :ref:`genindex`
 * :ref:`modindex`

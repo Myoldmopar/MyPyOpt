@@ -30,6 +30,7 @@ sys.path.insert(0, os.path.abspath('../mypyopt'))
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
+    'sphinxcontrib.spelling',
 ]
 
 # Add any paths that contain templates here, relative to this directory.

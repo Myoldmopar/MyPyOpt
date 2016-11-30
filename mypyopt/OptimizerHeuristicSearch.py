@@ -14,8 +14,8 @@ class HeuristicSearch(Optimizer):
     This class implements a heuristic, multi-variable, search optimization technique.
     """
 
-    def __init__(self, project_settings, decision_variable_array, input_output_worker, cb_f_of_x, cb_objective,
-                 cb_progress=None, cb_completed=None):
+    def __init__(self, project_settings, decision_variable_array, input_output_worker, 
+                 callback_f_of_x, callback_objective, callback_progress=None, callback_completed=None):
 
         # not really needed, but avoids warnings
         super(Optimizer, self).__init__()
@@ -26,10 +26,10 @@ class HeuristicSearch(Optimizer):
         self.io = input_output_worker
 
         # store the callback functions, which may be "None" for the progress/completed callbacks
-        self.cb_f_of_x = cb_f_of_x
-        self.cb_objective = cb_objective
-        self.cb_progress = cb_progress
-        self.cb_completed = cb_completed
+        self.callback_f_of_x = callback_f_of_x
+        self.callback_objective = callback_objective
+        self.callback_progress = callback_progress
+        self.callback_completed = callback_completed
 
         # the root project name is created/validated by the sim constructor, set up the folder for this particular run
         timestamp = time.strftime('%Y-%m-%d-%H:%M:%S')
@@ -72,15 +72,15 @@ class HeuristicSearch(Optimizer):
             self.io.write_line(True, self.full_output_file,
                                'User aborted simulation via stop signal file...')
             r = SearchReturnType(False, ReturnStateEnum.UserAborted)
-            if self.cb_completed:
-                self.cb_completed(r)
+            if self.callback_completed:
+                self.callback_completed(r)
             return r
         elif not obj_base.return_state == ReturnStateEnum.Successful:
             self.io.write_line(True, self.full_output_file,
                                'Initial point is infeasible or invalid, cannot begin iterations.  Aborting...')
             r = SearchReturnType(False, ReturnStateEnum.InvalidInitialPoint)
-            if self.cb_completed:
-                self.cb_completed(r)
+            if self.callback_completed:
+                self.callback_completed(r)
             return r
 
         # begin iteration loop
@@ -92,8 +92,8 @@ class HeuristicSearch(Optimizer):
                 self.io.write_line(True, self.full_output_file,
                                    'Found stop signal file in run directory; stopping now...')
                 r = SearchReturnType(False, ReturnStateEnum.UserAborted)
-                if self.cb_completed:
-                    self.cb_completed(r)
+                if self.callback_completed:
+                    self.callback_completed(r)
                 return r
 
             # begin DV loop
@@ -107,8 +107,8 @@ class HeuristicSearch(Optimizer):
                     self.io.write_line(True, self.full_output_file,
                                        'infeasible DV, name=' + dv.var_name)
                     r = SearchReturnType(False, ReturnStateEnum.InfeasibleDV)
-                    if self.cb_completed:
-                        self.cb_completed(r)
+                    if self.callback_completed:
+                        self.callback_completed(r)
                     return r
 
                 # then evaluate the new point
@@ -129,8 +129,8 @@ class HeuristicSearch(Optimizer):
                     self.io.write_line(True, self.full_output_file,
                                        'Error message: ' + str(obj_new.message))
                     r = SearchReturnType(False, ReturnStateEnum.UnsuccessfulOther)
-                    if self.cb_completed:
-                        self.cb_completed(r)
+                    if self.callback_completed:
+                        self.callback_completed(r)
                     return r
                 elif (not obj_new.return_state == ReturnStateEnum.Successful) or (j_new > j_base):
                     dv.delta_x = -self.project.coefficient_contract * dv.delta_x
@@ -154,12 +154,12 @@ class HeuristicSearch(Optimizer):
                 self.io.write_line(True, self.full_output_file, '*******Converged*******')
                 converged_values = [x.x_new for x in self.dvs]
                 r = SearchReturnType(True, ReturnStateEnum.Successful, converged_values)
-                if self.cb_completed:
-                    self.cb_completed(r)
+                if self.callback_completed:
+                    self.callback_completed(r)
                 return r
 
-            if self.cb_progress:
-                self.cb_progress(iteration)
+            if self.callback_progress:
+                self.callback_progress(iteration)
 
     def f_of_x(self, parameter_hash):
         """
@@ -169,11 +169,11 @@ class HeuristicSearch(Optimizer):
         """
 
         # run the simulation function
-        current_f = self.cb_f_of_x(parameter_hash)
+        current_f = self.callback_f_of_x(parameter_hash)
 
         # the sim function should return None if it failed (for now)
         if current_f:
-            sum_squares_error = self.cb_objective(current_f)
+            sum_squares_error = self.callback_objective(current_f)
             return ObjectiveEvaluation(ReturnStateEnum.Successful, sum_squares_error)
         else:
             return ObjectiveEvaluation(ReturnStateEnum.InfeasibleObj, None,
