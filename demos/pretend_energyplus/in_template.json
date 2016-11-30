@@ -1,0 +1,11 @@
+{
+  "note": "this is json for convenience, so that pretend_energyplus doesnt have to interpret actual idf syntax",
+  "wall_properties": {
+    "name": "wall name",
+    "resistance": "{wall_resistance}"
+  },
+  "outdoor_temps": {
+    "name": "design",
+    "minimum": "{min_outdoor_temp}"
+  }
+}
