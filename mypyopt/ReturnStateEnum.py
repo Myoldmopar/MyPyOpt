@@ -24,10 +24,10 @@ class ReturnStateEnum(object):
     @staticmethod
     def enum_to_string(enum):
         """
-        This static function converts an enum integer into a string representation
+        This static function converts an enumerated constant integer into a string representation
 
-        :param enum: An enum as defined in this class
-        :return: A string description of the enum
+        :param enum: A constant as defined in this class
+        :return: A string description of the constant
         """
         if enum == ReturnStateEnum.Successful:
             return "Successful"
