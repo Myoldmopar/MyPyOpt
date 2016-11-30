@@ -4,9 +4,9 @@ import time
 
 from Exceptions import MyPyOptException
 from ObjectiveEvaluation import ObjectiveEvaluation
+from Optimizer import Optimizer
 from ReturnStateEnum import ReturnStateEnum
 from SearchReturnType import SearchReturnType
-from Optimizer import Optimizer
 
 
 class HeuristicSearch(Optimizer):
@@ -14,7 +14,7 @@ class HeuristicSearch(Optimizer):
     This class implements a heuristic, multi-variable, search optimization technique.
     """
 
-    def __init__(self, project_settings, decision_variable_array, input_output_worker, 
+    def __init__(self, project_settings, decision_variable_array, input_output_worker,
                  callback_f_of_x, callback_objective, callback_progress=None, callback_completed=None):
 
         # not really needed, but avoids warnings

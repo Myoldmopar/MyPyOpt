@@ -6,7 +6,8 @@ class Optimizer(object):
     This is a base class of an Optimizer to define the interface
     """
 
-    def __init__(self, project_settings, decision_variable_array, input_output_worker, callback_f_of_x, callback_objective,
+    def __init__(self, project_settings, decision_variable_array, input_output_worker, callback_f_of_x,
+                 callback_objective,
                  callback_progress=None, callback_completed=None):
         pass
 
@@ -17,7 +18,8 @@ class Optimizer(object):
         Requirements: call callback_progress and callback_completed as needed
         Call f(x) with a hash of parameter names and values
         """
-        raise MyPyOptException("Tried to use search() on the Optimizer base class; verify derived class overrides this method")
+        raise MyPyOptException(
+            "Tried to use search() on the Optimizer base class; verify derived class overrides this method")
 
     def f_of_x(self, parameter_hash):
         """
@@ -25,4 +27,5 @@ class Optimizer(object):
         then passes those outputs into the objective function callback as an array, which usually returns the SSQE
         between known values and current outputs.
         """
-        raise MyPyOptException("Tried to use f_of_x() on the Optimizer base class; verify derived class overrides this method")
+        raise MyPyOptException(
+            "Tried to use f_of_x() on the Optimizer base class; verify derived class overrides this method")
