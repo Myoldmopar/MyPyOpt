@@ -7,7 +7,7 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
 from mypyopt.ProjectStructure import ProjectStructure
 from mypyopt.InputOutput import InputOutputManager
 from mypyopt.DecisionVariable import DecisionVariable
-from mypyopt.Optimizer import HeuristicSearch
+from mypyopt.OptimizerHeuristicSearch import HeuristicSearch
 from mypyopt.Exceptions import MyPyOptException
 from mypyopt.ReturnStateEnum import ReturnStateEnum
 

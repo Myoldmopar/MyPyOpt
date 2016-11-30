@@ -1,5 +1,5 @@
-Optimizer (Heuristic Search) Class Documentation
-================================================
+Optimizer Base Class Documentation
+==================================
 
 .. automodule:: Optimizer
     :members:

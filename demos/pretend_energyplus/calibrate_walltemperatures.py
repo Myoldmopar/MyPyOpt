@@ -11,7 +11,7 @@ sys.path.append(os.path.join(this_dir, '../..'))
 from mypyopt.ProjectStructure import ProjectStructure
 from mypyopt.InputOutput import InputOutputManager
 from mypyopt.DecisionVariable import DecisionVariable
-from mypyopt.Optimizer import HeuristicSearch
+from mypyopt.OptimizerHeuristicSearch import HeuristicSearch
 
 
 # Actual "simulation"
