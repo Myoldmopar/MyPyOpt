@@ -46,8 +46,9 @@ class TestQuadratic(unittest.TestCase):
         print("COMPLETED CALLBACK: DONE; reason=" + ReturnStateEnum.enum_to_string(return_value.reason))
 
     @staticmethod
-    def progress(completed_iteration_number):
-        print("PROGRESS CALLBACK: COMPLETED ITERATION #" + str(completed_iteration_number))
+    def progress(completed_iteration_number, latest_objective_function_value):
+        print("PROGRESS CALLBACK: COMPLETED ITERATION #" + str(completed_iteration_number) + " - J=" +
+              str(latest_objective_function_value))
 
     def test_quadratic1(self):
         self.sim = ProjectStructure(1.2, 0.85, 2000, 'TestProject', 'projects')

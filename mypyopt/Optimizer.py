@@ -21,7 +21,7 @@ class Optimizer(object):
         :param callback_objective: A Python function that accepts (currently) an array of output values from the current
                                    simulation run, to be used in comparing to some baseline
         :param callback_progress: An optional callback function that gets called each iteration and passed in an
-                                   iteration number as the only argument (for now -- will add more info later)
+                                   iteration number and the latest objective value (for now -- will add more info later)
         :param callback_completed: An optional callback function that gets called at the end of the optimization search,
                                    with a SearchReturnType instance as the only argument
         """

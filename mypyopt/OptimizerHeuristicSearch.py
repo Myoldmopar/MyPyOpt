@@ -159,7 +159,7 @@ class HeuristicSearch(Optimizer):
                 return r
 
             if self.callback_progress:
-                self.callback_progress(iteration)
+                self.callback_progress(iteration, j_base)
 
     def f_of_x(self, parameter_hash):
         """
