@@ -13,9 +13,11 @@ from mypyopt.ReturnStateEnum import ReturnStateEnum
 
 
 class TestQuadratic(unittest.TestCase):
-
     def setUp(self):
-
+        """
+        This sets up a 3 coefficient quadratic optimization; each individual test_ cases should override any of
+        the default structures set up here, but not modify them directly
+        """
         # Initialize list of decision variables
         # DecisionVariable(min, max, initial_value, initial_step_size, convergence_criterion, variable_name)
         self.dvs = list()
@@ -25,6 +27,9 @@ class TestQuadratic(unittest.TestCase):
 
         # Initialize the IO manager
         self.io = InputOutputManager()
+
+        # Initialize a project structure
+        self.sim = ProjectStructure(1.2, 0.85, 2000, 'TestProject', 'projects')
 
     # Actual "simulation"
     @staticmethod
@@ -47,11 +52,12 @@ class TestQuadratic(unittest.TestCase):
 
     @staticmethod
     def progress(completed_iteration_number, latest_objective_function_value):
-        print("PROGRESS CALLBACK: COMPLETED ITERATION #" + str(completed_iteration_number) + " - J=" +
-              str(latest_objective_function_value))
+        increment = 25.0
+        if completed_iteration_number / increment == int(completed_iteration_number / increment):
+            print("PROGRESS CALLBACK: COMPLETED ITERATION #" + str(completed_iteration_number) + " - J=" +
+                  str(latest_objective_function_value))
 
     def test_quadratic1(self):
-        self.sim = ProjectStructure(1.2, 0.85, 2000, 'TestProject', 'projects')
         searcher = HeuristicSearch(self.sim, self.dvs, self.io, self.sim_quadratic,
                                    self.ssqe_quadratic, self.progress, self.completed)
         response = searcher.search()
@@ -61,10 +67,18 @@ class TestQuadratic(unittest.TestCase):
         self.assertAlmostEqual(3.0, response.values[2], 3)
 
     def test_quadratic_bad_folder(self):
-        self.sim = ProjectStructure(1.2, 0.85, 2000, 'CantWriteToUsr', '/usr')
+        sim2 = ProjectStructure(1.2, 0.85, 2000, 'CantWriteToUsr', '/usr')
         with self.assertRaises(MyPyOptException):
-            HeuristicSearch(self.sim, self.dvs, self.io, self.sim_quadratic,
+            HeuristicSearch(sim2, self.dvs, self.io, self.sim_quadratic,
                             self.ssqe_quadratic, self.progress, self.completed)
+
+    def test_duplicated_dv_names(self):
+        these_dvs = self.dvs
+        these_dvs.append(DecisionVariable(-5, 5, 0.5, 0.1, 0.000001, 'a'))  # append another 'a' variable
+        with self.assertRaises(MyPyOptException):
+            HeuristicSearch(self.sim, these_dvs, self.io, self.sim_quadratic,
+                            self.ssqe_quadratic, self.progress, self.completed)
+
 
 # allow execution directly as python tests/test_solar.py
 if __name__ == '__main__':

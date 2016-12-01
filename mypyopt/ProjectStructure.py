@@ -7,7 +7,8 @@ class ProjectStructure(object):
     """
     This class defines high level project-wide settings
     """
-    def __init__(self, expansion, contraction, max_iterations, project_name, output_dir, verbose=False):
+    def __init__(self, expansion=1.2, contraction=0.85, max_iterations=2000, project_name='project_name',
+                 output_dir='projects', verbose=False):
         """
         Constructor for this class
 

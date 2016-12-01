@@ -1,6 +1,8 @@
 import json
+import collections
 import os
 import time
+import uuid
 
 from Exceptions import MyPyOptException
 from ObjectiveEvaluation import ObjectiveEvaluation
@@ -33,7 +35,8 @@ class HeuristicSearch(Optimizer):
 
         # the root project name is created/validated by the sim constructor, set up the folder for this particular run
         timestamp = time.strftime('%Y-%m-%d-%H:%M:%S')
-        dir_name = os.path.join(self.project.output_dir, timestamp + self.project.project_name)
+        dir_name = os.path.join(self.project.output_dir, timestamp + "_" + self.project.project_name +
+                                "_" + str(uuid.uuid4())[0:8])
         try:
             os.mkdir(dir_name)
         except OSError:
@@ -55,6 +58,12 @@ class HeuristicSearch(Optimizer):
                 os.remove(self.io.stopFile)
             except OSError:
                 raise MyPyOptException("Found stop file, but couldn't remove it, check permissions, aborting...")
+
+        # check the dv array for duplicate names, as this would be invalid
+        var_names = [dv.var_name for dv in self.dvs]
+        duplicate_names = [i for i, c in collections.Counter(var_names).items() if c > 1]
+        if duplicate_names:
+            raise MyPyOptException("Found duplicated names within decision variables, give each a unique name.")
 
     def search(self):
         """
