@@ -1,9 +1,6 @@
 # MyPyOpt
 Python version of my simple optimization app from school
 
-## Source
-These are based on my optimization class from grad school.
-
 ## Documentation [![](https://readthedocs.org/projects/mypyopt/badge/?version=latest)](http://mypyopt.readthedocs.org/en/latest/)
 Documentation is hosted on [ReadTheDocs](http://mypyopt.readthedocs.org/en/latest/).  The docs are completely bare right now.  To build the documentation, enter the docs/ subdirectory and execute `make html`; then open `/docs/_build/html/index.html` to see the documentation.
 
