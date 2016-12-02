@@ -37,6 +37,7 @@ class HeuristicSearch(Optimizer):
         timestamp = time.strftime('%Y-%m-%d-%H:%M:%S')
         dir_name = os.path.join(self.project.output_dir, timestamp + "_" + self.project.project_name +
                                 "_" + str(uuid.uuid4())[0:8])
+        print("Trying to create \"{}\"".format(dir_name))
         try:
             os.mkdir(dir_name)
         except OSError:
