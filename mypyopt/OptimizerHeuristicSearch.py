@@ -38,6 +38,10 @@ class HeuristicSearch(Optimizer):
         dir_name = os.path.join(self.project.output_dir, timestamp + "_" + self.project.project_name +
                                 "_" + str(uuid.uuid4())[0:8])
         print("Trying to create \"{}\"".format(dir_name))
+
+        if dir_name.startswith('/') and os.name == 'nt':
+            raise MyPyOptException("Attempted to create Linux folder path on Windows, aborting...")
+
         try:
             os.mkdir(dir_name)
         except:
