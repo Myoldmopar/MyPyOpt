@@ -4,7 +4,7 @@ import sys
 import os
 import subprocess
 
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../..'))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..'))
 
 from mypyopt.ProjectStructure import ProjectStructure
 from mypyopt.InputOutput import InputOutputManager

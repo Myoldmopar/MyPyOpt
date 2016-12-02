@@ -11,7 +11,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 
 this_dir = os.path.dirname(os.path.realpath(__file__))
-sys.path.append(os.path.join(this_dir, '../..'))
+sys.path.append(os.path.join(this_dir, '..', '..'))
 
 from mypyopt.ProjectStructure import ProjectStructure
 from mypyopt.InputOutput import InputOutputManager
