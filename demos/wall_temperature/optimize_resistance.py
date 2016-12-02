@@ -31,8 +31,8 @@ def ssqe_wall_heat_flux(sim_values):
 
 # Initialize list of decision variables
 dvs = list()
-dvs.append(DecisionVariable(minimum=0, maximum=100, initial_value=10, initial_step_size=1,
-                            convergence_criterion=0.001, variable_name='wall_resistance'))  # opt value = 20
+dvs.append(DecisionVariable('wall_resistance', minimum=0, maximum=100, initial_value=10, initial_step_size=1,
+                            convergence_criterion=0.001))  # opt value = 20
 
 # Initialize the IO manager
 io = InputOutputManager()

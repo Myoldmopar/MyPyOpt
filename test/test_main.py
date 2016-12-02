@@ -21,12 +21,12 @@ class TestQuadratic(unittest.TestCase):
         # Initialize list of decision variables
         # DecisionVariable(min, max, initial_value, initial_step_size, convergence_criterion, variable_name)
         self.dvs = list()
-        self.dvs.append(DecisionVariable(minimum=-5, maximum=5, initial_value=0.5, initial_step_size=0.1,
-                                         convergence_criterion=0.000001, variable_name='a'))  # opt value = 1
-        self.dvs.append(DecisionVariable(minimum=-5, maximum=5, initial_value=0.5, initial_step_size=0.1,
-                                         convergence_criterion=0.000001, variable_name='b'))  # opt value = 2
-        self.dvs.append(DecisionVariable(minimum=-5, maximum=5, initial_value=0.5, initial_step_size=0.1,
-                                         convergence_criterion=0.000001, variable_name='c'))  # opt value = 3
+        self.dvs.append(DecisionVariable('a', minimum=-5, maximum=5, initial_value=0.5, initial_step_size=0.1,
+                                         convergence_criterion=0.000001))  # opt value = 1
+        self.dvs.append(DecisionVariable('b', minimum=-5, maximum=5, initial_value=0.5, initial_step_size=0.1,
+                                         convergence_criterion=0.000001))  # opt value = 2
+        self.dvs.append(DecisionVariable('c', minimum=-5, maximum=5, initial_value=0.5, initial_step_size=0.1,
+                                         convergence_criterion=0.000001))  # opt value = 3
 
         # Initialize the IO manager
         self.io = InputOutputManager()
@@ -81,8 +81,8 @@ class TestQuadratic(unittest.TestCase):
     def test_duplicated_dv_names(self):
         these_dvs = self.dvs
         # same DVs except append a duplicate 'a' variable
-        these_dvs.append(DecisionVariable(minimum=-5, maximum=5, initial_value=0.5, initial_step_size=0.1,
-                                          convergence_criterion=0.000001, variable_name='a'))
+        these_dvs.append(DecisionVariable('a', minimum=-5, maximum=5, initial_value=0.5, initial_step_size=0.1,
+                                          convergence_criterion=0.000001))
         with self.assertRaises(MyPyOptException):
             HeuristicSearch(self.sim, these_dvs, self.io, self.sim_quadratic,
                             self.ssqe_quadratic, self.progress, self.completed)
@@ -105,7 +105,7 @@ class TestDefaults(unittest.TestCase):
             actual = [1 + 2 * x for x in [0, 1, 2]]
             return [(a - b) ** 2 for a, b in zip(actual, sim_values)]
 
-        dvs = [DecisionVariable(variable_name='a'), DecisionVariable(variable_name='b')]
+        dvs = [DecisionVariable('a'), DecisionVariable('b')]
         io = InputOutputManager()
         sim = ProjectStructure(verbose=True)
         searcher = HeuristicSearch(sim, dvs, io, sim_linear, calc_ssqe)
@@ -120,7 +120,7 @@ class TestDefaults(unittest.TestCase):
         This test demonstrates completely default parameters, lambdas instead of explicit functions, and
         returning a single, scalar variable from the sim function instead of an array or other structure
         """
-        dvs = [DecisionVariable(variable_name='a')]
+        dvs = [DecisionVariable('a')]
         io = InputOutputManager()
         sim = ProjectStructure()
         searcher = HeuristicSearch(sim, dvs, io, lambda x: x['a'], lambda x: (x-4)**2)

@@ -43,10 +43,10 @@ def ssqe_pretend_energyplus(sim_values):
 
 # Initialize list of decision variables
 dvs = list()
-dvs.append(DecisionVariable(minimum=-10, maximum=10, initial_value=1, initial_step_size=1,
-                            convergence_criterion=0.0001, variable_name='wall_resistance'))  # opt value = 2
-dvs.append(DecisionVariable(minimum=-100, maximum=100, initial_value=10, initial_step_size=1,
-                            convergence_criterion=0.0001, variable_name='min_outdoor_temp'))  # opt value = 20
+dvs.append(DecisionVariable('wall_resistance', minimum=-10, maximum=10, initial_value=1, initial_step_size=1,
+                            convergence_criterion=0.0001))  # opt value = 2
+dvs.append(DecisionVariable('min_outdoor_temp', minimum=-100, maximum=100, initial_value=10, initial_step_size=1,
+                            convergence_criterion=0.0001))  # opt value = 20
 
 # Initialize the IO manager
 io = InputOutputManager()

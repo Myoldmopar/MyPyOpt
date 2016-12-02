@@ -65,12 +65,12 @@ class MyApp(Tkinter.Tk):
 
         # optimization stuff
         dvs = list()
-        dvs.append(DecisionVariable(minimum=-5, maximum=5, initial_value=0.5, initial_step_size=0.1,
-                                    convergence_criterion=0.000001, variable_name='a'))  # opt value = 1
-        dvs.append(DecisionVariable(minimum=-5, maximum=5, initial_value=0.5, initial_step_size=0.1,
-                                    convergence_criterion=0.000001, variable_name='b'))  # opt value = 2
-        dvs.append(DecisionVariable(minimum=-5, maximum=5, initial_value=0.5, initial_step_size=0.1,
-                                    convergence_criterion=0.000001, variable_name='c'))  # opt value = 3
+        dvs.append(DecisionVariable('a', minimum=-5, maximum=5, initial_value=0.5, initial_step_size=0.1,
+                                    convergence_criterion=0.000001))  # opt value = 1
+        dvs.append(DecisionVariable('b', minimum=-5, maximum=5, initial_value=0.5, initial_step_size=0.1,
+                                    convergence_criterion=0.000001))  # opt value = 2
+        dvs.append(DecisionVariable('c', minimum=-5, maximum=5, initial_value=0.5, initial_step_size=0.1,
+                                    convergence_criterion=0.000001))  # opt value = 3
         io = InputOutputManager()
         sim = ProjectStructure(expansion=1.2, contraction=0.85, max_iterations=2000,
                                project_name='TestProject', output_dir='projects')
