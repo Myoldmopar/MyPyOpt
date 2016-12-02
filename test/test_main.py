@@ -90,9 +90,12 @@ class TestQuadratic(unittest.TestCase):
 
 class TestDefaults(unittest.TestCase):
     """
-    This unit test class is about testing out the default initialization of parameters passed into constructors
+    This unit test class is about testing out the default initializations of parameters passed into constructors
     """
-    def test_minimal(self):
+    def test_minimal_two_var(self):
+        """
+        This test is a realistic, but quite minimal project setup where we are solving for a, b in a+bx
+        """
 
         def sim_linear(parameter_hash):
             a, b = [parameter_hash[x] for x in ['a', 'b']]
@@ -111,6 +114,19 @@ class TestDefaults(unittest.TestCase):
         self.assertAlmostEqual(1.0, response.values[0], 2)
         self.assertAlmostEqual(2.0, response.values[1], 2)
 
+    def test_minimal_minimal(self):
+        """
+        This test is an extremely minimal demonstration, where we are trying to solve for a, in the equation "a=4"
+        This test demonstrates completely default parameters, lambdas instead of explicit functions, and
+        returning a single, scalar variable from the sim function instead of an array or other structure
+        """
+        dvs = [DecisionVariable(variable_name='a')]
+        io = InputOutputManager()
+        sim = ProjectStructure()
+        searcher = HeuristicSearch(sim, dvs, io, lambda x: x['a'], lambda x: (x-4)**2)
+        response = searcher.search()
+        self.assertTrue(response.success)
+        self.assertAlmostEqual(4.0, response.values[0], 3)
 
 # allow execution directly as python tests/test_main.py
 if __name__ == '__main__':

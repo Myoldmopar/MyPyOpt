@@ -21,8 +21,12 @@ elif sys.argv[1] == valid_args[0]:
     unittest.TextTestRunner().run(tests)
     sys.exit(0)
 elif sys.argv[1] == valid_args[1]:
-    print("I'll delete this folder: " + os.path.join(os.path.dirname(os.path.realpath(__file__)), "projects"))
-    shutil.rmtree(os.path.join(os.path.dirname(os.path.realpath(__file__)), "projects"))
+    folder = os.path.join(os.path.dirname(os.path.realpath(__file__)), "projects")
+    if os.path.exists(folder):
+        print("I'll delete this folder: " + folder)
+        shutil.rmtree(folder)
+    else:
+        print("Folder doesn't exist, I'm done")
     sys.exit(0)
 elif sys.argv[1] == valid_args[2]:
     usage()
