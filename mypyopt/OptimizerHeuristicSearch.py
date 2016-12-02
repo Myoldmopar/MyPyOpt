@@ -170,7 +170,7 @@ class HeuristicSearch(Optimizer):
 
             if converged:
                 self.io.write_line(True, self.full_output_file, '*******Converged*******')
-                converged_values = [x.x_new for x in self.dvs]
+                converged_values = {x.var_name: x.x_new for x in self.dvs}
                 r = SearchReturnType(True, ReturnStateEnum.Successful, converged_values)
                 if self.callback_completed:
                     self.callback_completed(r)

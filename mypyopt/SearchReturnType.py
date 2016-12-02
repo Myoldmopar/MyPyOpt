@@ -8,7 +8,7 @@ class SearchReturnType(object):
 
         :param success: A boolean value specifying whether the search was successful or not
         :param error_reason: A descriptive message of the search response
-        :param values: An array of converged parameter values, if successful, or None -- this should be a hash later
+        :param values: A hash of converged values where the keys are the original variable_names from the DVs
         """
         self.success = success
         self.reason = error_reason

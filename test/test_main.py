@@ -66,9 +66,9 @@ class TestQuadratic(unittest.TestCase):
                                    self.ssqe_quadratic, self.io, self.progress, self.completed)
         response = searcher.search()
         self.assertTrue(response.success)
-        self.assertAlmostEqual(1.0, response.values[0], 3)
-        self.assertAlmostEqual(2.0, response.values[1], 3)
-        self.assertAlmostEqual(3.0, response.values[2], 3)
+        self.assertAlmostEqual(1.0, response.values['a'], 3)
+        self.assertAlmostEqual(2.0, response.values['b'], 3)
+        self.assertAlmostEqual(3.0, response.values['c'], 3)
 
     def test_quadratic_bad_folder(self):
         # same settings except output dir changed
@@ -110,8 +110,8 @@ class TestDefaults(unittest.TestCase):
         searcher = HeuristicSearch(sim, dvs, sim_linear, calc_ssqe)
         response = searcher.search()
         self.assertTrue(response.success)
-        self.assertAlmostEqual(1.0, response.values[0], 2)
-        self.assertAlmostEqual(2.0, response.values[1], 2)
+        self.assertAlmostEqual(1.0, response.values['a'], 2)
+        self.assertAlmostEqual(2.0, response.values['b'], 2)
 
     def test_minimal_minimal(self):
         """
@@ -124,7 +124,7 @@ class TestDefaults(unittest.TestCase):
         searcher = HeuristicSearch(sim, dvs, lambda x: x['a'], lambda x: (x-4)**2)
         response = searcher.search()
         self.assertTrue(response.success)
-        self.assertAlmostEqual(4.0, response.values[0], 3)
+        self.assertAlmostEqual(4.0, response.values['a'], 3)
 
 # allow execution directly as python tests/test_main.py
 if __name__ == '__main__':
