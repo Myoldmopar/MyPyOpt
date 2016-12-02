@@ -37,8 +37,9 @@ class HeuristicSearch(Optimizer):
         timestamp = time.strftime('%Y-%m-%d-%H-%M-%S')
         dir_name = os.path.join(self.project.output_dir, timestamp + "_" + self.project.project_name +
                                 "_" + str(uuid.uuid4())[0:8])
-        print("Trying to create \"{}\"".format(dir_name))
 
+        # so on Windows, as seen in issue #22, when the unit test would try to tell Windows to create a folder in /usr,
+        #  it would fail badly, such that I couldn't raise the MyPyOptException at all.  So this is a workaround.
         if dir_name.startswith('/') and os.name == 'nt':
             raise MyPyOptException("Attempted to create Linux folder path on Windows, aborting...")
 
