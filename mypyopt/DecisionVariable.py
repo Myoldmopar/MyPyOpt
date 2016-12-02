@@ -6,7 +6,7 @@ class DecisionVariable(object):
     A structure for defining a single dimension in the optimization parameter space
     """
     def __init__(self, minimum=-10000, maximum=10000, initial_value=1, initial_step_size=0.1,
-                 convergence_criterion=0.001, variable_name='dummy_dv_name'):
+                 convergence_criterion=0.001, variable_name='blank_dv_name'):
         """
         The constructor for this class, which does all initialization, at a minimum, the user should
         define the variable_name, the others can be left defaulted if desired
@@ -19,8 +19,6 @@ class DecisionVariable(object):
         :param variable_name: A string ID for this variable that is used in callback functions
         :raises MyPyOptException: If the numeric conditions given in the arguments are invalid
         """
-        if not variable_name:
-            variable_name = "BLANK DV NAME"
         if minimum > maximum or initial_step_size <= 0 or convergence_criterion <= 0:
             raise MyPyOptException("Invalid parameters in DV definition for DV with name: " + str(variable_name))
         self.value_minimum = minimum

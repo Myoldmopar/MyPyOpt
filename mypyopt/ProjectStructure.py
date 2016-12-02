@@ -24,6 +24,12 @@ class ProjectStructure(object):
                 os.makedirs(output_dir)
             except os.error:
                 raise MyPyOptException("Couldn't create root folder, aborting...")
+        if expansion <= 1.0:
+            raise MyPyOptException("Expansion coefficient is less than or equal to 1 (={0}), must be greater than 1.")
+        if contraction >= 1.0:
+            raise MyPyOptException("Contraction coefficient is greater than or equal to 1 (={0}), must be less than 1.")
+        if max_iterations < 1:
+            raise MyPyOptException("Max iterations is extremely small, likely an erroneous condition, aborting...")
         self.coefficient_expand = expansion
         self.coefficient_contract = contraction
         self.max_iterations = max_iterations
