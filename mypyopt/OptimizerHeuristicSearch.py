@@ -15,6 +15,19 @@ from InputOutput import InputOutputManager
 class HeuristicSearch(Optimizer):
     """
     This class implements a heuristic, multi-variable, search optimization technique.
+    The process is:
+
+    1. Evaluate an objective value at the initial point :math:`j_0 = f\\left(x_0\\right)`
+
+    2. Loop over each decision variable, perturb it in the current direction, and evaluate a new objective value with
+       all other variables at their current position :math:`j_{i} = f\\left(\\tilde{x}\\right)`
+
+    3. If the objective value reduced, which is the goal, move in the current direction and continue looping.  If the
+       objective value increased, reverse directions and contract.
+
+    4. Continue looping until all decision variables are converged between the current and prior iteration, or maximum
+       iterations is reached.
+
     """
     def __init__(self, project_settings, decision_variable_array, callback_f_of_x,
                  callback_objective, input_output_worker=None, callback_progress=None, callback_completed=None):
