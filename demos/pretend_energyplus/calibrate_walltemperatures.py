@@ -53,5 +53,5 @@ io = InputOutputManager()
 
 sim = ProjectStructure(expansion=1.2, contraction=0.85, max_iterations=2000,
                        project_name='RunPretendEnergyPlus', output_dir='projects', verbose=True)
-searcher = HeuristicSearch(sim, dvs, io, sim_pretend_energyplus, ssqe_pretend_energyplus)
+searcher = HeuristicSearch(sim, dvs, sim_pretend_energyplus, ssqe_pretend_energyplus, io)
 response = searcher.search()

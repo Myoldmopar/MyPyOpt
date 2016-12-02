@@ -9,15 +9,15 @@ from ObjectiveEvaluation import ObjectiveEvaluation
 from Optimizer import Optimizer
 from ReturnStateEnum import ReturnStateEnum
 from SearchReturnType import SearchReturnType
+from InputOutput import InputOutputManager
 
 
 class HeuristicSearch(Optimizer):
     """
     This class implements a heuristic, multi-variable, search optimization technique.
     """
-
-    def __init__(self, project_settings, decision_variable_array, input_output_worker,
-                 callback_f_of_x, callback_objective, callback_progress=None, callback_completed=None):
+    def __init__(self, project_settings, decision_variable_array, callback_f_of_x,
+                 callback_objective, input_output_worker=None, callback_progress=None, callback_completed=None):
 
         # not really needed, but avoids warnings
         super(Optimizer, self).__init__()
@@ -25,7 +25,10 @@ class HeuristicSearch(Optimizer):
         # store the settings
         self.project = project_settings
         self.dvs = decision_variable_array
-        self.io = input_output_worker
+        if input_output_worker:
+            self.io = input_output_worker
+        else:
+            self.io = InputOutputManager()
 
         # store the callback functions, which may be "None" for the progress/completed callbacks
         self.callback_f_of_x = callback_f_of_x

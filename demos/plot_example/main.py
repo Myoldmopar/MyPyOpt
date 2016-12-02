@@ -74,7 +74,7 @@ class MyApp(Tkinter.Tk):
         io = InputOutputManager()
         sim = ProjectStructure(expansion=1.2, contraction=0.85, max_iterations=2000,
                                project_name='TestProject', output_dir='projects')
-        searcher = HeuristicSearch(sim, dvs, io, sim_quadratic, ssqe_quadratic, progress)
+        searcher = HeuristicSearch(sim, dvs, sim_quadratic, ssqe_quadratic, io, progress)
         self.thread1 = threading.Thread(target=searcher.search)
         # I know...I know this is bad; thread1 is going to make callbacks that eventually
         # hit the main GUI thread.  Tk isn't as simple as gtk and wx for transferring ownership to the

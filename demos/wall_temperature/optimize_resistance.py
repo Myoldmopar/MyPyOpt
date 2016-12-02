@@ -39,5 +39,5 @@ io = InputOutputManager()
 
 sim = ProjectStructure(expansion=1.2, contraction=0.85, max_iterations=2000, project_name='CalibrateWallResistance',
                        output_dir='projects', verbose=True)
-searcher = HeuristicSearch(sim, dvs, io, sim_wall_heat_transfer, ssqe_wall_heat_flux)
+searcher = HeuristicSearch(sim, dvs, sim_wall_heat_transfer, ssqe_wall_heat_flux, io)
 response = searcher.search()

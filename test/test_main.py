@@ -62,8 +62,8 @@ class TestQuadratic(unittest.TestCase):
                   str(latest_objective_function_value))
 
     def test_quadratic1(self):
-        searcher = HeuristicSearch(self.sim, self.dvs, self.io, self.sim_quadratic,
-                                   self.ssqe_quadratic, self.progress, self.completed)
+        searcher = HeuristicSearch(self.sim, self.dvs, self.sim_quadratic,
+                                   self.ssqe_quadratic, self.io, self.progress, self.completed)
         response = searcher.search()
         self.assertTrue(response.success)
         self.assertAlmostEqual(1.0, response.values[0], 3)
@@ -75,8 +75,8 @@ class TestQuadratic(unittest.TestCase):
         sim2 = self.sim
         sim2.output_dir = '/usr'
         with self.assertRaises(MyPyOptException):
-            HeuristicSearch(sim2, self.dvs, self.io, self.sim_quadratic,
-                            self.ssqe_quadratic, self.progress, self.completed)
+            HeuristicSearch(sim2, self.dvs, self.sim_quadratic,
+                            self.ssqe_quadratic, self.io, self.progress, self.completed)
 
     def test_duplicated_dv_names(self):
         these_dvs = self.dvs
@@ -84,8 +84,8 @@ class TestQuadratic(unittest.TestCase):
         these_dvs.append(DecisionVariable('a', minimum=-5, maximum=5, initial_value=0.5, initial_step_size=0.1,
                                           convergence_criterion=0.000001))
         with self.assertRaises(MyPyOptException):
-            HeuristicSearch(self.sim, these_dvs, self.io, self.sim_quadratic,
-                            self.ssqe_quadratic, self.progress, self.completed)
+            HeuristicSearch(self.sim, these_dvs, self.sim_quadratic,
+                            self.ssqe_quadratic, self.io, self.progress, self.completed)
 
 
 class TestDefaults(unittest.TestCase):
@@ -106,9 +106,8 @@ class TestDefaults(unittest.TestCase):
             return [(a - b) ** 2 for a, b in zip(actual, sim_values)]
 
         dvs = [DecisionVariable('a'), DecisionVariable('b')]
-        io = InputOutputManager()
         sim = ProjectStructure(verbose=True)
-        searcher = HeuristicSearch(sim, dvs, io, sim_linear, calc_ssqe)
+        searcher = HeuristicSearch(sim, dvs, sim_linear, calc_ssqe)
         response = searcher.search()
         self.assertTrue(response.success)
         self.assertAlmostEqual(1.0, response.values[0], 2)
@@ -121,9 +120,8 @@ class TestDefaults(unittest.TestCase):
         returning a single, scalar variable from the sim function instead of an array or other structure
         """
         dvs = [DecisionVariable('a')]
-        io = InputOutputManager()
         sim = ProjectStructure()
-        searcher = HeuristicSearch(sim, dvs, io, lambda x: x['a'], lambda x: (x-4)**2)
+        searcher = HeuristicSearch(sim, dvs, lambda x: x['a'], lambda x: (x-4)**2)
         response = searcher.search()
         self.assertTrue(response.success)
         self.assertAlmostEqual(4.0, response.values[0], 3)
