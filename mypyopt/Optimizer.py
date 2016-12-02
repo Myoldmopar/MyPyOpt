@@ -17,8 +17,12 @@ class Optimizer(object):
         :param input_output_worker: An InputOutput instance to allow easy access to IO operations
         :param callback_f_of_x: A Python function that accepts a dictionary of parameters where each key is the name
                                 defined in the decision variable instance, and the value is the current value of that
-                                variable
-        :param callback_objective: A Python function that accepts (currently) an array of output values from the current
+                                variable.  The function return value is completely user defined, and will be passed
+                                into the objective callback function.  A typical object would be an array of hourly
+                                output values, or possibly a hash of values.
+        :param callback_objective: A Python function that accepts a single argument.
+                                   This argument is exactly what comes out of the simulation (f_of_x) function.
+                                   The user can choose to return an array, a hash, whatever.
                                    simulation run, to be used in comparing to some baseline
         :param callback_progress: An optional callback function that gets called each iteration and passed in an
                                    iteration number and the latest objective value (for now -- will add more info later)

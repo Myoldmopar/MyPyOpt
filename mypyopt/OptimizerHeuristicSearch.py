@@ -178,12 +178,12 @@ class HeuristicSearch(Optimizer):
         """
 
         # run the simulation function
-        current_f = self.callback_f_of_x(parameter_hash)
+        simulation_results = self.callback_f_of_x(parameter_hash)
 
         # the sim function should return None if it failed (for now)
-        if current_f:
-            sum_squares_error = self.callback_objective(current_f)
-            return ObjectiveEvaluation(ReturnStateEnum.Successful, sum_squares_error)
+        if simulation_results:
+            error_to_minimize = self.callback_objective(simulation_results)
+            return ObjectiveEvaluation(ReturnStateEnum.Successful, error_to_minimize)
         else:
             return ObjectiveEvaluation(ReturnStateEnum.InfeasibleObj, None,
                                        'Function f(x) failed, probably infeasible output')
