@@ -40,7 +40,7 @@ class HeuristicSearch(Optimizer):
         print("Trying to create \"{}\"".format(dir_name))
         try:
             os.mkdir(dir_name)
-        except OSError:
+        except:
             raise MyPyOptException("Couldn't create project folder, check permissions, aborting...")
 
         # output optimization information so we don't have to look in the source
