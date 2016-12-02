@@ -34,7 +34,7 @@ class HeuristicSearch(Optimizer):
         self.callback_completed = callback_completed
 
         # the root project name is created/validated by the sim constructor, set up the folder for this particular run
-        timestamp = time.strftime('%Y-%m-%d-%H:%M:%S')
+        timestamp = time.strftime('%Y-%m-%d-%H-%M-%S')
         dir_name = os.path.join(self.project.output_dir, timestamp + "_" + self.project.project_name +
                                 "_" + str(uuid.uuid4())[0:8])
         print("Trying to create \"{}\"".format(dir_name))
