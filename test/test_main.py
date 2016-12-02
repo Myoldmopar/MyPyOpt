@@ -88,6 +88,30 @@ class TestQuadratic(unittest.TestCase):
                             self.ssqe_quadratic, self.progress, self.completed)
 
 
-# allow execution directly as python tests/test_solar.py
+class TestDefaults(unittest.TestCase):
+    """
+    This unit test class is about testing out the default initialization of parameters passed into constructors
+    """
+    def test_minimal(self):
+
+        def sim_linear(parameter_hash):
+            a, b = [parameter_hash[x] for x in ['a', 'b']]
+            return [a + b * x for x in [0, 1, 2]]
+
+        def calc_ssqe(sim_values):
+            actual = [1 + 2 * x for x in [0, 1, 2]]
+            return [(a - b) ** 2 for a, b in zip(actual, sim_values)]
+
+        dvs = [DecisionVariable(variable_name='a'), DecisionVariable(variable_name='b')]
+        io = InputOutputManager()
+        sim = ProjectStructure(verbose=True)
+        searcher = HeuristicSearch(sim, dvs, io, sim_linear, calc_ssqe)
+        response = searcher.search()
+        self.assertTrue(response.success)
+        self.assertAlmostEqual(1.0, response.values[0], 2)
+        self.assertAlmostEqual(2.0, response.values[1], 2)
+
+
+# allow execution directly as python tests/test_main.py
 if __name__ == '__main__':
     unittest.main()

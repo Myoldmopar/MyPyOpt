@@ -1,3 +1,6 @@
+import sys
+
+
 class InputOutputManager(object):
     """
     This class defines some input/output-related conveniences
@@ -19,6 +22,7 @@ class InputOutputManager(object):
         """
         if console:
             print(string)
+            sys.stdout.flush()
         if not string.endswith('\n'):
             string += '\n'
         if full_output:

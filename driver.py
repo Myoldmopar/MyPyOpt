@@ -3,8 +3,6 @@ import os
 import shutil
 import subprocess
 import unittest
-from test import test_main
-
 
 valid_args = ['test', 'clean_projects', 'usage', 'docs']
 
@@ -19,8 +17,8 @@ if len(sys.argv) != 2:
     usage()
     sys.exit(1)
 elif sys.argv[1] == valid_args[0]:
-    suite = unittest.TestLoader().loadTestsFromTestCase(test_main.TestQuadratic)
-    unittest.TextTestRunner(verbosity=2).run(suite)
+    tests = unittest.TestLoader().discover('test')
+    unittest.TextTestRunner().run(tests)
     sys.exit(0)
 elif sys.argv[1] == valid_args[1]:
     print("I'll delete this folder: " + os.path.join(os.path.dirname(os.path.realpath(__file__)), "projects"))
