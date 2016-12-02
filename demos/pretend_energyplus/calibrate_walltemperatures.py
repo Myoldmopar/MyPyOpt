@@ -43,12 +43,15 @@ def ssqe_pretend_energyplus(sim_values):
 
 # Initialize list of decision variables
 dvs = list()
-dvs.append(DecisionVariable(-10, 10, 1, 1, 0.0001, 'wall_resistance'))  # opt value = 2
-dvs.append(DecisionVariable(-100, 100, 10, 1, 0.0001, 'min_outdoor_temp'))  # opt value = 20
+dvs.append(DecisionVariable(minimum=-10, maximum=10, initial_value=1, initial_step_size=1,
+                            convergence_criterion=0.0001, variable_name='wall_resistance'))  # opt value = 2
+dvs.append(DecisionVariable(minimum=-100, maximum=100, initial_value=10, initial_step_size=1,
+                            convergence_criterion=0.0001, variable_name='min_outdoor_temp'))  # opt value = 20
 
 # Initialize the IO manager
 io = InputOutputManager()
 
-sim = ProjectStructure(1.2, 0.85, 2000, 'RunPretendEnergyPlus', 'projects', True)
+sim = ProjectStructure(expansion=1.2, contraction=0.85, max_iterations=2000,
+                       project_name='RunPretendEnergyPlus', output_dir='projects', verbose=True)
 searcher = HeuristicSearch(sim, dvs, io, sim_pretend_energyplus, ssqe_pretend_energyplus)
 response = searcher.search()

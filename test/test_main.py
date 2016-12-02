@@ -21,15 +21,19 @@ class TestQuadratic(unittest.TestCase):
         # Initialize list of decision variables
         # DecisionVariable(min, max, initial_value, initial_step_size, convergence_criterion, variable_name)
         self.dvs = list()
-        self.dvs.append(DecisionVariable(-5, 5, 0.5, 0.1, 0.000001, 'a'))  # opt value = 1
-        self.dvs.append(DecisionVariable(-5, 5, 0.5, 0.1, 0.000001, 'b'))  # opt value = 2
-        self.dvs.append(DecisionVariable(-5, 5, 0.5, 0.1, 0.000001, 'c'))  # opt value = 3
+        self.dvs.append(DecisionVariable(minimum=-5, maximum=5, initial_value=0.5, initial_step_size=0.1,
+                                         convergence_criterion=0.000001, variable_name='a'))  # opt value = 1
+        self.dvs.append(DecisionVariable(minimum=-5, maximum=5, initial_value=0.5, initial_step_size=0.1,
+                                         convergence_criterion=0.000001, variable_name='b'))  # opt value = 2
+        self.dvs.append(DecisionVariable(minimum=-5, maximum=5, initial_value=0.5, initial_step_size=0.1,
+                                         convergence_criterion=0.000001, variable_name='c'))  # opt value = 3
 
         # Initialize the IO manager
         self.io = InputOutputManager()
 
         # Initialize a project structure
-        self.sim = ProjectStructure(1.2, 0.85, 2000, 'TestProject', 'projects')
+        self.sim = ProjectStructure(expansion=1.2, contraction=.85, max_iterations=2000, project_name='TestProject',
+                                    output_dir='projects')
 
     # Actual "simulation"
     @staticmethod
@@ -67,14 +71,18 @@ class TestQuadratic(unittest.TestCase):
         self.assertAlmostEqual(3.0, response.values[2], 3)
 
     def test_quadratic_bad_folder(self):
-        sim2 = ProjectStructure(1.2, 0.85, 2000, 'CantWriteToUsr', '/usr')
+        # same settings except output dir changed
+        sim2 = self.sim
+        sim2.output_dir = '/usr'
         with self.assertRaises(MyPyOptException):
             HeuristicSearch(sim2, self.dvs, self.io, self.sim_quadratic,
                             self.ssqe_quadratic, self.progress, self.completed)
 
     def test_duplicated_dv_names(self):
         these_dvs = self.dvs
-        these_dvs.append(DecisionVariable(-5, 5, 0.5, 0.1, 0.000001, 'a'))  # append another 'a' variable
+        # same DVs except append a duplicate 'a' variable
+        these_dvs.append(DecisionVariable(minimum=-5, maximum=5, initial_value=0.5, initial_step_size=0.1,
+                                          convergence_criterion=0.000001, variable_name='a'))
         with self.assertRaises(MyPyOptException):
             HeuristicSearch(self.sim, these_dvs, self.io, self.sim_quadratic,
                             self.ssqe_quadratic, self.progress, self.completed)

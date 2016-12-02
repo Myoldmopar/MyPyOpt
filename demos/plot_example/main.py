@@ -65,11 +65,15 @@ class MyApp(Tkinter.Tk):
 
         # optimization stuff
         dvs = list()
-        dvs.append(DecisionVariable(-5, 5, 0.5, 0.1, 0.000001, 'a'))  # opt value = 1
-        dvs.append(DecisionVariable(-5, 5, 0.5, 0.1, 0.000001, 'b'))  # opt value = 2
-        dvs.append(DecisionVariable(-5, 5, 0.5, 0.1, 0.000001, 'c'))  # opt value = 3
+        dvs.append(DecisionVariable(minimum=-5, maximum=5, initial_value=0.5, initial_step_size=0.1,
+                                    convergence_criterion=0.000001, variable_name='a'))  # opt value = 1
+        dvs.append(DecisionVariable(minimum=-5, maximum=5, initial_value=0.5, initial_step_size=0.1,
+                                    convergence_criterion=0.000001, variable_name='b'))  # opt value = 2
+        dvs.append(DecisionVariable(minimum=-5, maximum=5, initial_value=0.5, initial_step_size=0.1,
+                                    convergence_criterion=0.000001, variable_name='c'))  # opt value = 3
         io = InputOutputManager()
-        sim = ProjectStructure(1.2, 0.85, 2000, 'TestProject', 'projects')
+        sim = ProjectStructure(expansion=1.2, contraction=0.85, max_iterations=2000,
+                               project_name='TestProject', output_dir='projects')
         searcher = HeuristicSearch(sim, dvs, io, sim_quadratic, ssqe_quadratic, progress)
         self.thread1 = threading.Thread(target=searcher.search)
         # I know...I know this is bad; thread1 is going to make callbacks that eventually

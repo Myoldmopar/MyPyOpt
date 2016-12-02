@@ -31,11 +31,13 @@ def ssqe_wall_heat_flux(sim_values):
 
 # Initialize list of decision variables
 dvs = list()
-dvs.append(DecisionVariable(0, 100, 10, 1, 0.001, 'wall_resistance'))  # opt value = 20
+dvs.append(DecisionVariable(minimum=0, maximum=100, initial_value=10, initial_step_size=1,
+                            convergence_criterion=0.001, variable_name='wall_resistance'))  # opt value = 20
 
 # Initialize the IO manager
 io = InputOutputManager()
 
-sim = ProjectStructure(1.2, 0.85, 2000, 'CalibrateWallResistance', 'projects', True)
+sim = ProjectStructure(expansion=1.2, contraction=0.85, max_iterations=2000, project_name='CalibrateWallResistance',
+                       output_dir='projects', verbose=True)
 searcher = HeuristicSearch(sim, dvs, io, sim_wall_heat_transfer, ssqe_wall_heat_flux)
 response = searcher.search()
