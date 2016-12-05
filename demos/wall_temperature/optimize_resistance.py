@@ -15,7 +15,7 @@ from mypyopt.OptimizerHeuristicSearch import HeuristicSearch
 # Actual "simulation"
 def sim_wall_heat_transfer(parameter_hash):
     resistance_value = parameter_hash['wall_resistance']
-    p = subprocess.Popen([os.path.join(os.path.dirname(os.path.realpath(__file__)), 'calculate_wall_temperature.py'),
+    p = subprocess.Popen(['python', os.path.join(os.path.dirname(os.path.realpath(__file__)), 'calculate_wall_temperature.py'),
                           str(resistance_value)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE)
     out, err = p.communicate()
     return [float(str(out).strip())]
