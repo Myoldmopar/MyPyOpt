@@ -22,7 +22,7 @@ def sim_pretend_energyplus(parameter_hash):
     new_contents = template_contents.replace('{wall_resistance}',
                                              str(resistance_value)).replace('{min_outdoor_temp}', str(min_outdoor_temp))
     open(os.path.join(this_dir, 'in.json'), 'w').write(new_contents)
-    subprocess.call([os.path.join(this_dir, 'pretend_energyplus.py'),
+    subprocess.call(['python', os.path.join(this_dir, 'pretend_energyplus.py'),
                     str(resistance_value)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE)
     f = open(os.path.join(this_dir, 'out.csv'))
     reader = csv.reader(f)
