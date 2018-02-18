@@ -61,7 +61,7 @@ class HeuristicSearch(Optimizer):
 
         try:
             os.mkdir(dir_name)
-        except:
+        except OSError:
             raise MyPyOptException("Couldn't create project folder, check permissions, aborting...")
 
         # output optimization information so we don't have to look in the source
