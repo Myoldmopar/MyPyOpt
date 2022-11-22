@@ -3,6 +3,7 @@
 from pathlib import Path
 import os
 import subprocess
+from sys import executable
 
 from mypyopt.project_structure import ProjectStructure
 from mypyopt.input_output import InputOutputManager
@@ -13,9 +14,13 @@ from mypyopt.optimizer_heuristic_search import HeuristicSearch
 # Actual "simulation"
 def sim_wall_heat_transfer(parameter_hash):
     resistance_value = parameter_hash['wall_resistance']
-    p = subprocess.Popen(['python', os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                                                 'calculate_wall_temperature.py'),
-                          str(resistance_value)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE)
+    p = subprocess.Popen(
+        [
+            executable,
+            os.path.join(os.path.dirname(os.path.realpath(__file__)), 'calculate_wall_temperature.py'),
+            str(resistance_value)
+        ],
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE)
     out_bytes, _ = p.communicate()
     out_string = out_bytes.decode('utf-8').strip()
     return [float(out_string)]
@@ -25,7 +30,7 @@ def sim_wall_heat_transfer(parameter_hash):
 def sum_sq_err_wall_heat_flux(sim_values):
     measured_heat_flux = 0.5
     simulated_heat_flux = sim_values[0]
-    sqe = (measured_heat_flux-simulated_heat_flux)**2
+    sqe = (measured_heat_flux - simulated_heat_flux) ** 2
     return sqe
 
 

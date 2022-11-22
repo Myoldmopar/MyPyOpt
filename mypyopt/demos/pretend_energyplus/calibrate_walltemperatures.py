@@ -3,6 +3,7 @@ import os
 import csv
 from pathlib import Path
 import subprocess
+from sys import executable
 
 from mypyopt.project_structure import ProjectStructure
 from mypyopt.input_output import InputOutputManager
@@ -21,7 +22,11 @@ def sim_pretend_energyplus(parameter_hash):
                                              str(resistance_value)).replace('{min_outdoor_temp}', str(min_outdoor_temp))
     (this_dir / 'in.json').write_text(new_contents)
     subprocess.call(
-        ['python', str(this_dir / 'pretend_energyplus.py'), str(resistance_value)],
+        [
+            executable,
+            str(this_dir / 'pretend_energyplus.py'),
+            str(resistance_value)
+        ],
         stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE
     )
     surface_temps = list()
