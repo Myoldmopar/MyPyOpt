@@ -1,14 +1,11 @@
 #!/usr/bin/python
-import os
-import csv
 from pathlib import Path
-import subprocess
-from sys import executable
 
 from mypyopt.project_structure import ProjectStructure
 from mypyopt.input_output import InputOutputManager
 from mypyopt.decision_variable import DecisionVariable
 from mypyopt.optimizer_heuristic_search import HeuristicSearch
+from mypyopt.demos.pretend_energyplus.pretend_energyplus import pretend_e_plus
 
 this_dir = Path(__file__).resolve().parent
 
@@ -20,20 +17,10 @@ def sim_pretend_energyplus(parameter_hash):
     template_contents = (this_dir / 'in_template.json').read_text()
     new_contents = template_contents.replace('{wall_resistance}',
                                              str(resistance_value)).replace('{min_outdoor_temp}', str(min_outdoor_temp))
-    (this_dir / 'in.json').write_text(new_contents)
-    subprocess.call(
-        [
-            executable,
-            str(this_dir / 'pretend_energyplus.py'),
-            str(resistance_value)
-        ],
-        stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE
-    )
-    surface_temps = list()
-    with open(os.path.join(this_dir, 'out.csv')) as f:
-        reader = csv.reader(f)
-        for row in reader:
-            surface_temps.append(float(row[1]))
+    # pretend we are writing new_contents to a real IDF/EpJSON file
+    # pretend we are doing a subprocess call out to EnergyPlus.exe
+    csv_data = pretend_e_plus(new_contents)
+    surface_temps = [x[1] for x in csv_data]
     return surface_temps
 
 
