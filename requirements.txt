@@ -1,3 +1,4 @@
 coverage
-tox
-sphinxcontrib-spelling
+flake8
+nose
+matplotlib  # just for demo scripts

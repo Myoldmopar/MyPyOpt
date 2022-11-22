@@ -1,0 +1,6 @@
+[run]
+source = mypyopt
+
+[report]
+# this file generates a graph, not testing it during unit testing
+omit = *mypyopt/demos/plot_example/main.py

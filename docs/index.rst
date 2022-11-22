@@ -19,15 +19,15 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-   DecisionVariable
-   Exceptions
-   InputOutput
-   ObjectiveEvaluation
-   OptimizationStructure
-   Optimizer
-   OptimizerHeuristicSearch
-   ReturnStateEnum
-   SearchReturnType
+   decision_variable
+   exceptions
+   input_output
+   objective_evaluation
+   optimization_structure
+   optimizer
+   optimizer_heuristic_search
+   return_state_enum
+   search_return_type
 
 Index and tables
 ================
