@@ -1,29 +1,18 @@
 #!/usr/bin/python
 
 from pathlib import Path
-import os
-import subprocess
-from sys import executable
 
 from mypyopt.project_structure import ProjectStructure
 from mypyopt.input_output import InputOutputManager
 from mypyopt.decision_variable import DecisionVariable
 from mypyopt.optimizer_heuristic_search import HeuristicSearch
+from mypyopt.demos.wall_temperature.calculate_wall_temperature import calculate_wall_temp
 
 
 # Actual "simulation"
 def sim_wall_heat_transfer(parameter_hash):
     resistance_value = parameter_hash['wall_resistance']
-    p = subprocess.Popen(
-        [
-            executable,
-            os.path.join(os.path.dirname(os.path.realpath(__file__)), 'calculate_wall_temperature.py'),
-            str(resistance_value)
-        ],
-        stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE)
-    out_bytes, _ = p.communicate()
-    out_string = out_bytes.decode('utf-8').strip()
-    return [float(out_string)]
+    return [calculate_wall_temp(resistance_value)]
 
 
 # Squared Error expression
