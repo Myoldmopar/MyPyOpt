@@ -7,7 +7,7 @@ readme_contents = readme_file.read_text()
 
 setup(
     name='my-py-opt',
-    version="0.2",
+    version="0.3",
     description='Lightweight optimization library',
     url='https://github.com/Myoldmopar/MyPyOpt',
     license='UnlicensedForNow',
