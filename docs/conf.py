@@ -10,7 +10,7 @@ from pathlib import Path
 import sys
 
 project_root_path = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(project_root_path / 'mypyopt'))
+sys.path.insert(0, str(project_root_path))
 
 project = 'MyPyOpt'
 copyright = '2022, Edwin Lee'

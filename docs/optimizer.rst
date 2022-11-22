@@ -1,7 +1,7 @@
 Optimizer Base Class Documentation
 ==================================
 
-.. automodule:: optimizer
+.. automodule:: mypyopt.optimizer
     :members:
     :undoc-members:
     :show-inheritance:

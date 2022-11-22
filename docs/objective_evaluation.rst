@@ -1,7 +1,7 @@
 Objective Evaluation Result Class Documentation
 ===============================================
 
-.. automodule:: objective_evaluation
+.. automodule:: mypyopt.objective_evaluation
     :members:
     :undoc-members:
     :show-inheritance:

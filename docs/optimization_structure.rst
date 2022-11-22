@@ -1,7 +1,7 @@
 Optimization Project Structure Class Documentation
 ==================================================
 
-.. automodule:: project_structure
+.. automodule:: mypyopt.project_structure
     :members:
     :undoc-members:
     :show-inheritance:

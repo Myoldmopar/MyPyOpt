@@ -1,7 +1,7 @@
 IO Class Documentation
 ======================
 
-.. automodule:: input_output
+.. automodule:: mypyopt.input_output
     :members:
     :undoc-members:
     :show-inheritance:

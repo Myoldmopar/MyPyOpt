@@ -1,7 +1,7 @@
 Return State Enumeration Class Documentation
 ============================================
 
-.. automodule:: return_state_enum
+.. automodule:: mypyopt.return_state_enum
     :members:
     :undoc-members:
     :show-inheritance:

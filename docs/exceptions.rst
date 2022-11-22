@@ -1,7 +1,7 @@
 Exceptions Class Documentation
 ==============================
 
-.. automodule:: exceptions
+.. automodule:: mypyopt.exceptions
     :members:
     :undoc-members:
     :show-inheritance:
