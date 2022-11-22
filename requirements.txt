@@ -1,4 +1,5 @@
 coverage
+coveralls
 flake8
 nose
 matplotlib  # just for demo scripts
